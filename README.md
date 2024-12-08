@@ -94,6 +94,27 @@ int main() {
 
 Représenter les résultats dans un tableau.
 
+# Problème de plus court chemin (pcc)
+
+## Données
+
+$a+b=c$
+
+$$
+f(x) = \int_{-\infty}^\infty \hat f(\xi)\,e^{2 \pi \xi x} \,d\xi
+$$
+
+## Bibliothèques nécessaires
+
+### Graphviz
+- **Version** : `Graphviz-12.2.0-win32`
+- **Téléchargement** : [Graphviz Downloads](https://graphviz.org/)
+- **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
+
+### SDL
+- **Téléchargement** : [SDL Downloads](https://www.libsdl.org/download-2.0.php)
+- **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
+
 
 
 ## Sources
