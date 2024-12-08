@@ -2,7 +2,7 @@ https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
 
 # Algorythme Dijkstra
 
-> A.1) Algorithme de Dijkstra : L'algorithme de Dijkstra est utile pour trouver le chemin le moins coûteux entre deux nœuds d’un graphe pondéré. Il nécessite l'utilisation d'une structure de données efficace comme une file de priorité (souvent implémentée avec un tas). Il est important de prouver que les nœuds déjà visités ont leur plus court chemin correctement calculé.
+> A.1 Algorithme de Dijkstra : L'algorithme de Dijkstra est utile pour trouver le chemin le moins coûteux entre deux nœuds d’un graphe pondéré. Il nécessite l'utilisation d'une structure de données efficace comme une file de priorité (souvent implémentée avec un tas). Il est important de prouver que les nœuds déjà visités ont leur plus court chemin correctement calculé.
 
 ## 1. Effectuez des recherches pour comprendre l'algorithme choisi en profondeur. Vous devrez utiliser des ressources académiques ou en ligne pour mieux comprendre son fonctionnement et les théories qui le sous-tendent. Listez vos sources, expliquez en quelques mots pourquoi vous avez le choix de cet algorithme en particulier, et donnez son contexte d’utilisation (dans quels cas concrets est-il typiquement utilisé ?). 
 
@@ -39,7 +39,12 @@ https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
 + Cas concrets
 
 
-+ Sources
+### Sources
+https://www.geeksforgeeks.org/binary-heap/
+https://www.geeksforgeeks.org/heap-data-structure/
+https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
+https://d-michail.github.io/assets/teaching/data-structures/033_BinaryHeapImplementation.en.pdf
+
 [Blondel, 2014] Blondel, V. (2014). Mathématiques discrètes 1 : Théorie et algorithmique des graphes. Technical report, UCL/EPL. Cours LINMA1691.
 
 https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
@@ -55,7 +60,7 @@ Szczesniak, I., & Woźna-Szcześniak, B. (n.d.). *Generic Dijkstra: correctness 
 Delhaye, V. (2015). *Le plus court chemin d’imposition des multinationales : application de l’algorithme de Dijkstra*. UCLouvain, Louvain School of Management. Retrieved from UCLouvain.
 
 
-Livres comme "Introduction to Algorithms" de Cormen (chapitres sur les graphes). => https://ils.bib.uclouvain.be/unamur/documents/1471273
+Livres "Introduction to Algorithms" de Cormen (chapitres sur les graphes). => https://ils.bib.uclouvain.be/unamur/documents/1471273
 
 ## 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
 
@@ -75,6 +80,22 @@ Livres comme "Introduction to Algorithms" de Cormen (chapitres sur les graphes).
 Analyse des performances dans différents contextes de graphe (dense, sparse).
 
 Complexity analysis (O(V + E log V))
+
++ de temps
+Soit n sommets et a arcs, on a :
+O((a+n)log n)
+<=> O(a+nlog n) *simplification pour l'implémentation avec un tas de Fibonacci ce qui améliore le temps asymptotique de l'algorithme de Dijkstra et de l'algorithme de Prim (calcul l'arbre couvrant de pods minimal d'un graphe).
+
+A vérifier !
+Complexité : En 𝑂(𝑉²) avec une matrice d’adjacence, optimisée en 𝑂(𝐸log𝑉) avec un tas min et une liste d’adjacence.
+
++ Comparaison en termes de complexité
+++ Temps d’exécution :
+A* et Dijkstra : O(E+VlogV) pour les graphes avec files de priorité.
+Bellman-Ford : O(V×E), ce qui est plus lourd en termes de traitement pour de grands graphes.
+++ Capacité de traitement :
+A* et Dijkstra nécessitent que tous les poids soient positifs.
+Bellman-Ford accepte des poids négatifs, mais au prix d'une complexité temporelle accrue.
 
 ## 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.
 

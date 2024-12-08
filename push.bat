@@ -3,11 +3,11 @@ chcp 65001
 
 ::@param token Github
 
-set "message=Fin d'Aides-Mémoires sur FormationVidéo."
+set "message="
 @REM set "message="
-
+https://github.com/js202005082300/Dijkstra
 set "UTILISATEUR=js202005082300"
-set "DEPOT=Aide-memoires"
+set "DEPOT=Dijkstra"
 set "LIEN=https://github.com/%UTILISATEUR%/%DEPOT%.git"
 set d=%date:~0,2%-%date:~3,2%-%date:~6,4%
 set t=%time:~0,2%:%time:~3,2%:%time:~6,2%

@@ -4,27 +4,6 @@ Calcul les plus courts chemins dans un graphe.
 
 Publié en 1959 par l'informaticien Edsger Dijkstra.
 
-
-
-## complexité
-
-### de temps
-Soit n sommets et a arcs, on a :
-O((a+n)log n)
-<=> O(a+nlog n) *simplification pour l'implémentation avec un tas de Fibonacci ce qui améliore le temps asymptotique de l'algorithme de Dijkstra et de l'algorithme de Prim (calcul l'arbre couvrant de pods minimal d'un graphe).
-
-A vérifier !
-Complexité : En 𝑂(𝑉²) avec une matrice d’adjacence, optimisée en 𝑂(𝐸log𝑉) avec un tas min et une liste d’adjacence.
-
-+ Comparaison en termes de complexité
-++ Temps d’exécution :
-A* et Dijkstra : O(E+VlogV) pour les graphes avec files de priorité.
-Bellman-Ford : O(V×E), ce qui est plus lourd en termes de traitement pour de grands graphes.
-++ Capacité de traitement :
-A* et Dijkstra nécessitent que tous les poids soient positifs.
-Bellman-Ford accepte des poids négatifs, mais au prix d'une complexité temporelle accrue.
-
-
 <!-- !!! une file de priorité (souvent implémentée avec un tas). -->
 ```C
 #include <stdio.h>
@@ -76,6 +55,7 @@ void Dijkstra(int G[V][V], int Poids[V][V], int sdeb) {
 }
 
 int main() {
+    // Représenter les résultats dans un tableau.
     int G[V][V] = {{0, 4, 0, 0, 0, 0, 0, 8, 0},
                    {4, 0, 8, 0, 0, 0, 0, 11, 0},
                    {0, 8, 0, 7, 0, 4, 0, 0, 2},
@@ -92,11 +72,9 @@ int main() {
 }
 ```
 
-Représenter les résultats dans un tableau.
-
 # Problème de plus court chemin (pcc)
 
-## Données
+## Test symboles mathématique en .md
 
 $a+b=c$
 
@@ -114,13 +92,3 @@ $$
 ### SDL
 - **Téléchargement** : [SDL Downloads](https://www.libsdl.org/download-2.0.php)
 - **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
-
-
-
-## Sources
-
-https://www.geeksforgeeks.org/binary-heap/
-https://www.geeksforgeeks.org/heap-data-structure/
-https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
-
-https://d-michail.github.io/assets/teaching/data-structures/033_BinaryHeapImplementation.en.pdf
