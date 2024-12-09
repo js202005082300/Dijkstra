@@ -40,6 +40,7 @@ https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
 
 
 ### Sources
+https://webcampus.unamur.be/pluginfile.php/50153/mod_resource/content/2/2019-2020.pdf
 https://www.geeksforgeeks.org/binary-heap/
 https://www.geeksforgeeks.org/heap-data-structure/
 https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
@@ -62,7 +63,25 @@ Delhaye, V. (2015). *Le plus court chemin d’imposition des multinationales : a
 
 Livres "Introduction to Algorithms" de Cormen (chapitres sur les graphes). => https://ils.bib.uclouvain.be/unamur/documents/1471273
 
+https://graphviz.org/docs/library/
+
 ## 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
+
+- Spécification du programme suivant
+- environnement
+int V, E, src;
+int graph[V][V]; // Matrice d'adjacence pour représenter le graphe
+int dist[V]; // Tableau des distances
+- précondition
+pré ≡ V = V0 > 0 ∧ E = E0 ≥ 0 ∧ src = src0 ∧ ∀i,j (0 ≤ i,j < V0) : graph[i][j] ≥ 0
+( V ) est le nombre de sommets et doit être positif.
+( E ) est le nombre d'arêtes et doit être non négatif.
+( src ) est le sommet source.
+Les poids des arêtes dans la matrice d'adjacence doivent être non négatifs.
+- postcondition
+post ≡ ∀v (0 ≤ v < V0) : dist[v] = min(∑_{(u,w) ∈ P} graph[u][w]) où P est un chemin de src0 à v
+
+Pour chaque sommet ( v ), ( dist[v] ) contient la distance minimale depuis le sommet source ( src0 ) jusqu'à ( v ).
 
 ## 3. Implémentez l'algorithme en C. Vous êtes autorisés à vous aider des ressources que vous trouvez, mais l’implémentation doit être votre propre travail : vous devez vous l’approprier et en maîtriser tous les détails. Dans le rapport, vous donnerez le code (commenté) de votre implémentation, vous détaillerez les structures de données utilisées et expliquer pourquoi elles sont adaptées à l'algorithme choisi.
 

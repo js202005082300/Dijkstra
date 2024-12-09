@@ -36,7 +36,7 @@ void dijkstra_simple(Graph *graph, int src) {
         sptSet[u] = true;  // Marquer le sommet choisi comme traité
 
         // Pointeur temporaire pour parcourir la liste d'adjacence des sommets adjacents au sommet choisi.
-        NodeList* tmp = graph->array[u].head;
+        NodeList* tmp = graph->tab_neighbours[u].head;
 
         while (tmp != NULL) {
             int v = tmp->dest;
@@ -77,7 +77,7 @@ void dijkstra_optimized(Graph *graph, int src) {
         MinHeapNode *minHeapNode = extract_min(minHeap);
         int u = minHeapNode->v;
 
-        NodeList* tmp = graph->array[u].head;
+        NodeList* tmp = graph->tab_neighbours[u].head;
         while (tmp != NULL) {
             int v = tmp->dest;
             if (is_in_min_heap(minHeap, v) && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {

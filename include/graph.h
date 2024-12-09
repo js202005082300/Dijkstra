@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <graphviz/cgraph.h>
-#include <graphviz/gvc.h>
 #include "util.h"
 
 /* Définition d'un Noeud (sommet) */
@@ -23,8 +21,8 @@ typedef struct AdjacencyList {
 typedef struct Graph {
     Boolean is_oriented;
     int nb_vertices;                    // Nombre de sommets
-    AdjacencyList *array;               // Tableau de listes d'adjacence
-    Agraph_t *graph; // Structure Graphviz pour représenter le graphe
+    AdjacencyList *tab_neighbours;      // Tableau de listes d'adjacence
+    FILE *graph_file;
 } Graph, *grP;
 
 /* Prototypes */

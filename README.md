@@ -85,7 +85,7 @@ $$
 ## Bibliothèques nécessaires
 
 ### Graphviz
-- **Version** : `Graphviz-12.2.0-win32`
+- **Version** : `Graphviz-12.2.1-win64`
 - **Téléchargement** : [Graphviz Downloads](https://graphviz.org/)
 - **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
 

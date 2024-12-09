@@ -6,13 +6,21 @@ Graph* new_graph(int nb_vertices, Boolean is_oriented) {
     check_allocation(g);
     g->is_oriented = is_oriented;
     g->nb_vertices = nb_vertices;
-    g->array = malloc(nb_vertices * sizeof(*g->array));
-    check_allocation(g->array);
+    g->tab_neighbours = malloc(nb_vertices * sizeof(*g->tab_neighbours));
+    check_allocation(g->tab_neighbours);
     for (int i = 0; i < nb_vertices; i++)
-        g->array[i].head = NULL;
+        g->tab_neighbours[i].head = NULL;
 
     /*--------- Graphviz ----------*/
-    g->graph = agopen("my_graph", g->is_oriented ? AGDIGRAPH : AGRAPH, NULL); check_allocation(g->graph);
+    if(g->is_oriented)
+        g->graph_file = fopen("graphs/digraph.out", "w");
+    else
+        g->graph_file = fopen("graphs/graph.out", "w"); 
+    check_allocation(g->tab_neighbours);
+    if(g->is_oriented)
+        fprintf(g->graph_file, "digraph my_graph\n{\n");
+    else
+        fprintf(g->graph_file, "graph my_graph\n{\n");
     /*-----------------------------*/
 
     return g;
@@ -39,26 +47,27 @@ NodeList* add_node(int dest, int weight) {
 /* Ajoute une arête au graphe */
 void add_edge(Graph *g, int src, int dest, int weight) {
     NodeList* newNode = add_node(dest, weight);
-    newNode->next = g->array[src].head;
-    g->array[src].head = newNode;
+    newNode->next = g->tab_neighbours[src].head;
+    g->tab_neighbours[src].head = newNode;
 
     // Si le graphe n'est pas orienté, ajoute l'arête dans l'autre sens
     if (!g->is_oriented) {
         newNode = add_node(src, weight);
-        newNode->next = g->array[dest].head;
-        g->array[dest].head = newNode;
+        newNode->next = g->tab_neighbours[dest].head;
+        g->tab_neighbours[dest].head = newNode;
     }
 
     /*--------- Graphviz ----------*/
-    Agnode_t *src_node = agnode(g->graph, src, TRUE);
-    Agnode_t *dest_node = agnode(g->graph, dest, TRUE);
-    agedge(g->graph, src_node, dest_node, NULL, TRUE);
+    if(g->is_oriented)
+        fprintf(g->graph_file, "\t%d -> %d;\n", src, dest);
+    else
+        fprintf(g->graph_file, "\t%d -- %d;\n", src, dest);
     /*-----------------------------*/
 }
 
 void print_graph(Graph *g) {
     for(int i = 0; i < g->nb_vertices; i++) {
-        NodeList* current = g->array[i].head;
+        NodeList* current = g->tab_neighbours[i].head;
         printf("(%d) : ", i);
 
         while(current != NULL) {
@@ -72,18 +81,11 @@ void print_graph(Graph *g) {
 }
 
 void display_graph(Graph *g) {
-    GVC_t *gvc = gvContext();
-    agwrite(g->graph, stdout); // Écrit le graphe dans stdout pour le débogage
-    gvLayout(gvc, g->graph, "dot"); gvRender(gvc, g->graph, "png", fopen("graph.png", "w"));
-    gvFreeLayout(gvc, g->graph);
-    gvFreeContext(gvc); // Ajout de la commande pour ouvrir l'image générée selon le système d'exploitation
-    #ifdef _WIN32
-        system("start graph.png");
-    #elif __APPLE__
-        system("open graph.png");
-    #else
-        system("xdg-open graph.png");
-    #endif
+    //Windows seulement !
+    if(g->is_oriented)
+        system("dot.exe digraph.out");
+    else
+        system("dot.exe graph.out");
 }
 
 /* Libère la mémoire allouée pour le graphe */
@@ -91,9 +93,9 @@ void free_graph(Graph *g) {
     if(is_empty_graph(g))
         return;
     
-    if(g->array) {
+    if(g->tab_neighbours) {
         for (int i = 0; i < g->nb_vertices; i++) {
-            NodeList* current = g->array[i].head;
+            NodeList* current = g->tab_neighbours[i].head;
             while (current != NULL) {
                 NodeList* temp = current;
                 current = current->next;
@@ -101,11 +103,12 @@ void free_graph(Graph *g) {
             }
         }
         // Libération de la liste d'adjacence
-        free(g->array);
+        free(g->tab_neighbours);
     }
 
     /*--------- Graphviz ----------*/
-    agclose(g->graph);
+    fprintf(g->graph_file, "}\n");// \n: convention pour le retour à la ligne fichier.
+    fclose(g->graph_file);
     /*-----------------------------*/
 
     // Libération du Graphe

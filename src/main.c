@@ -23,7 +23,7 @@ int main() {
 
     // // Convertir la matrice d'adjacence en un graphe
     // printf("Conversion de la matrice d'adjacence en graphe...\n");
-    // Graph *graph = convert_matrix_to_graph(graphMatrix, NUM_VERTICES);
+    // Graph *g = convert_matrix_to_graph(graphMatrix, NUM_VERTICES);
 
     // Afficher les informations sur l'utilisation de Dijkstra
     printf("Dijkstra avec structure Graph :\n");
@@ -45,21 +45,17 @@ int main() {
     add_edge(g1, 6, 8, 6);
     add_edge(g1, 7, 8, 7);
 
-    // print_graph(graph_test);
+    print_graph(g1);
     display_graph(g1);
 
     // Exécuter les deux versions de Dijkstra
-    printf("Execution de Dijkstra sans Min-Heap...\n");
     dijkstra_simple(g1, 0);  // Dijkstra sans min-heap
-    printf("Execution de Dijkstra avec Min-Heap...\n");
     dijkstra_optimized(g1, 0);  // Dijkstra avec min-heap
 
     // Libérer la mémoire
-    printf("Liberation de la memoire...\n");
+    // free_graph(g);
     free_graph(g1);
-    // free_graph(graph_test);
 
-    printf("Programme termine.\n");
     return 0;
 }
 
