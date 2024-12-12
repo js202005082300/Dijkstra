@@ -9,12 +9,14 @@
 void dijkstra_simple(Graph *graph, int src) {
     int V = graph->nb_vertices;
     int dist[V];
+    int pred[V];
     Boolean sptSet[V]; // Le tableau sptSet[i] sera vrai si le sommet i est inclus dans le plus court chemin trouvé.
 
     // Initialiser toutes les distances comme infinies et sptSet[] comme faux
     for (int i = 0; i < V; i++) {
         dist[i] = INT_MAX;
         sptSet[i] = false;
+        pred[i] = -1;
     }
 
     // La distance du sommet source à lui-même est toujours 0
@@ -37,18 +39,21 @@ void dijkstra_simple(Graph *graph, int src) {
 
         // Pointeur temporaire pour parcourir la liste d'adjacence des sommets adjacents au sommet choisi.
         NodeList* tmp = graph->tab_neighbours[u].head;
-
         while (tmp != NULL) {
             int v = tmp->dest;
             if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
                 dist[v] = dist[u] + tmp->weight;
+                pred[v] = u;
             }
             tmp = tmp->next;
         }
     }
 
+    // Afficher les distances finales et les prédécesseurs
+    print_shortest_paths(graph, dist, pred);
+
     // Afficher les distances
-    // print_arr(dist, V);
+    print_arr(dist, V);
 }
 
 /**
@@ -89,7 +94,7 @@ void dijkstra_optimized(Graph *graph, int src) {
     }
 
     // Afficher les distances
-    // print_arr(dist, V);
+    print_arr(dist, V);
 }
 
 /* Imprime les distances minimales */

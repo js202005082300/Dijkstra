@@ -65,27 +65,199 @@ Livres "Introduction to Algorithms" de Cormen (chapitres sur les graphes). => ht
 
 https://graphviz.org/docs/library/
 
-## 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
 
-- Spécification du programme suivant
-- environnement
+Champagne, J. (2023). Langage C #22 - Graphes. YouTube. https://www.youtube.com/watch?v=T5MU8NDMMj4 
+Champagne, J. (2024). Architecture - graphe. YouTube. https://www.youtube.com/watch?v=TwO8rCTFy1c
+
+https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra
+https://fr.wikipedia.org/wiki/Liste_d%27adjacence
+https://fr.wikipedia.org/wiki/Matrice_d%27adjacence
+https://fr.wikipedia.org/wiki/Liste_d%27adjacence
+https://lacl.u-pec.fr/dima/complexite/cours4.pdf
+
+# Spécification
+
+> 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
+
+## environnement
+```c
 int V, E, src;
-int graph[V][V]; // Matrice d'adjacence pour représenter le graphe
+Graph* graph; // Représentation du graphe sous forme de liste d'adjacence
 int dist[V]; // Tableau des distances
-- précondition
-pré ≡ V = V0 > 0 ∧ E = E0 ≥ 0 ∧ src = src0 ∧ ∀i,j (0 ≤ i,j < V0) : graph[i][j] ≥ 0
-( V ) est le nombre de sommets et doit être positif.
-( E ) est le nombre d'arêtes et doit être non négatif.
-( src ) est le sommet source.
-Les poids des arêtes dans la matrice d'adjacence doivent être non négatifs.
-- postcondition
+int pred[V]; // Tableau des prédécesseurs
+```
+
+Soit ( G = (V, E) ) un graphe où ( V ) est l'ensemble des sommets ((|V| = V₀)) et ( E \subseteq V \times V ) l'ensemble des arêtes pondérées par une fonction ( w : E \to \mathbb{R}^+ ).
+
+## Précondition (formalisée mathématiquement)
+
+<br>
+
+$$
+\begin{aligned}
+\text{pré} \equiv & \\
+    & V = V₀ > 0 \land E = E₀ \geq 0 \land \text{src} = \text{src₀} \land \\
+    & \forall (u, v) \in E₀ : w(u, v) \geq 0
+\end{aligned}
+$$
+
+V₀ est le nombre de sommets (V₀ > 0).  
+E₀ est le nombre d'arêtes (E₀ ≥ 0).  
+src₀ est le sommet source, src ∈ [0, V-1].  
+Les poids des arêtes (w(u, v)) sont non négatifs (w(u, v) ≥ 0).  
+Cette formulation se base uniquement sur les arêtes existantes dans E₀, ce qui correspond à l'utilisation d'une liste d'adjacence comme structure de données.  
+
+> **Remarque** : Je choisis la liste d'adjacence car la matrice d'adjacence :
+$$ V₀ > 0 \land \forall i,j : 0 \leq i,j < V₀ : \text{graph}[i][j] \geq 0$$
+
+> nécessite $O(V₀^2)$ d’espace. Cela est dû au fait que `graph[i][j]` représente le poids de l’arête entre `i` et `j`, ou ∞ si l’arête est absente, ce qui permet un accès direct mais utilise beaucoup d'espace. En revanche, la liste d'adjacence :
+$$V₀ > 0 \land \forall (u,v) \in E₀ : w(u,v) \geq 0$$
+
+> utilise $O(V₀ + |E₀|)$ d’espace, ce qui est optimal pour les graphes creux (sparse) car seules les arêtes existantes sont stockées.
+
+## Orientation du graphe
+
+Dans mon implémentation, je travaille avec un graphe orienté, ce qui signifie que les arêtes ont une direction. Cela se reflète dans les préconditions et les structures de données utilisées. Voici comment cela se traduit mathématiquement :
+
+Graphe orienté :  
+
+$G = (V, E)$ où $E \subseteq V \times V$ et il se peut que $(v_1, v_2) \in E$ mais $(v_2, v_1) \notin E$. Cela signifie que l'arête $(v_1, v_2)$ existe, mais l'arête inverse $(v_2, v_1)$ n'existe pas nécessairement.
+
+## Postcondition (formalisée mathématiquement)
+
+<br>
+
+$$
+\text{post} \equiv \forall v \in V : \text{dist}[v] = 
+\begin{cases} 
+\min\left(\sum\limits_{(u,v) \in P} w(u,v)\right) & \text{si } P \text{ existe} \\
+\infty & \text{sinon}
+\end{cases}
+$$
+
+
+Si un chemin P existe de src à v, alors dist[v] contient la somme minimale des poids des arêtes de P.
+Si aucun chemin n'existe, dist[v] = ∞.
+
++ Vérification dans le code
+    - La distance initiale des sommets est définie comme ∞ (dist[i] = INT_MAX).
+    - La distance est mise à jour uniquement si un chemin existe, via la condition :
+```c
+if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
+    dist[v] = dist[u] + tmp->weight;
+}
+```
+    - Les sommets inatteignables depuis la source ne sont jamais mis à jour, donc dist[v] reste ∞.
+
+
+
+
+## Invariant de boucle (formalisé mathématiquement)
+
+Pendant l'exécution de l'algorithme, après chaque itération k, l'invariant suivant est satisfait :
+
+Invariant de validité :
+∀ u ∈ Sₖ : dist[u] = true_dist(src, u)
+où Sₖ est l'ensemble des sommets pour lesquels la distance minimale a été confirmée après k itérations.
+
+Invariant sur les distances :
+∀ v ∉ Sₖ : dist[v] ≥ true_dist(src, v)
+Tous les sommets qui n'ont pas encore été traités ont des estimations de distance (dans dist[v]) supérieures ou égales à leur véritable distance.
+
+Invariant de mise à jour :
+∀ (u, v) ∈ E : dist[v] ≤ dist[u] + w(u, v)
+Aucune distance estimée ne peut être inférieure à la somme des poids le long d'une arête adjacente.
+
+Commentaires sur votre algorithme
+Invariant respecté : Les trois propriétés mentionnées ci-dessus garantissent que votre algorithme converge correctement. Ces invariants sont maintenus grâce à l'exploration systématique des sommets adjacents et la mise à jour des distances via les conditions sur sptSet[v] et dist[v].
+
+Convergence : À la fin de l'algorithme, Sₖ contient tous les sommets atteignables depuis src, et dist[v] est valide pour tous les sommets v.
+
+
+Si vous avez besoin d'autres modifications ou d'aide supplémentaire, n'hésitez pas à demander !
+
+
+
+
+
+
+----------------
+
+> postcondition
 post ≡ ∀v (0 ≤ v < V0) : dist[v] = min(∑_{(u,w) ∈ P} graph[u][w]) où P est un chemin de src0 à v
 
 Pour chaque sommet ( v ), ( dist[v] ) contient la distance minimale depuis le sommet source ( src0 ) jusqu'à ( v ).
 
-## 3. Implémentez l'algorithme en C. Vous êtes autorisés à vous aider des ressources que vous trouvez, mais l’implémentation doit être votre propre travail : vous devez vous l’approprier et en maîtriser tous les détails. Dans le rapport, vous donnerez le code (commenté) de votre implémentation, vous détaillerez les structures de données utilisées et expliquer pourquoi elles sont adaptées à l'algorithme choisi.
+# Implémentation
 
-+ Structures de données associées
+> Implémentez l'algorithme en C. Vous êtes autorisés à vous aider des ressources que vous trouvez, mais l’implémentation doit être votre propre travail : vous devez vous l’approprier et en maîtriser tous les détails. Dans le rapport, vous donnerez le code (commenté) de votre implémentation, vous détaillerez les structures de données utilisées et expliquer pourquoi elles sont adaptées à l'algorithme choisi.
+
+```c
+#include "dijkstra.h"
+
+/**
+ * Algorithme de Dijkstra sans Min-Heap.
+ * @param graph Graph sous forme de liste d'adjacence.
+ * @param src Sommet source pour les plus courts chemins.
+ */
+void dijkstra_simple(Graph *graph, int src) {
+    int V = graph->nb_vertices;
+    int dist[V];
+    int pred[V];
+    Boolean sptSet[V]; // Le tableau sptSet[i] sera vrai si le sommet i est inclus dans le plus court chemin trouvé.
+
+    // Initialiser toutes les distances comme infinies et sptSet[] comme faux
+    for (int i = 0; i < V; i++) {
+        dist[i] = INT_MAX;
+        sptSet[i] = false;
+        pred[i] = -1;
+    }
+
+    // La distance du sommet source à lui-même est toujours 0
+    dist[src] = 0;
+
+    // Trouver le chemin le plus court pour tous les sommets
+    for (int count = 0; count < V - 1; count++) {
+        // Choisir le sommet de distance minimale parmi ceux qui ne sont pas encore traités
+        int u = -1;                 // Erreur si sommet non trouvé
+        int min_dist = INT_MAX;     // Initialiser à la valeur maximale
+        for (int v = 0; v < V; v++) {
+            if (!sptSet[v] && dist[v] <= min_dist) {
+                min_dist = dist[v]; // màj min_dist
+                u = v;              // màj le sommet avec la distance minimale
+            }
+        }
+
+        if(u == -1) break; // Si aucun sommet n'a été trouvé, sortir de la boucle
+        sptSet[u] = true;  // Marquer le sommet choisi comme traité
+
+        // Pointeur temporaire pour parcourir la liste d'adjacence des sommets adjacents au sommet choisi.
+        NodeList* tmp = graph->tab_neighbours[u].head;
+        while (tmp != NULL) {
+            int v = tmp->dest;
+            if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
+                dist[v] = dist[u] + tmp->weight;
+                pred[v] = u;
+            }
+            tmp = tmp->next;
+        }
+    }
+
+    // Afficher les distances finales et les prédécesseurs
+    print_shortest_paths(graph, dist, pred);
+
+    // Afficher les distances
+    print_arr(dist, V);
+}
+```
+V : Nombre total de sommets.  
+E : Nombre total d'arêtes.  
+src : Sommet source pour Dijkstra.  
+graph : Représentation du graphe en liste d'adjacence.  
+dist : Tableau des distances minimales.  
+pred : Tableau des prédécesseurs des sommets.  
+sptSet : Ensemble des sommets traités (Shortest Path Tree Set).  
+NodeList : Liste des voisins d'un sommet.  
 
 
 ## 4. En vos propres mots, expliquez comment fonctionne l'algorithme. Décrivez de manière intuitive pourquoi l’implémentation produit un résultat correct par rapport à vos spécifications.
@@ -93,6 +265,8 @@ Pour chaque sommet ( v ), ( dist[v] ) contient la distance minimale depuis le so
 ## 5. Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
 
 ## 6. Analysez la complexité temporelle et spatiale « pire des cas » de l'algorithme. Justifiez votre analyse en fonction des différentes étapes de l'algorithme et des structures de données utilisées.
+
+
 
 + Complexité temporelle et spatiale :
 

@@ -28,7 +28,8 @@ $(EXEC) : $(OBJ)
 .dot.png:
 	$(DOT_CMD) -Tpng $< -o $@
 
-dot: graphs/graph.png
+graph: graphs/graph.png
+digraph: graphs/digraph.png
 
 valgrind:
 ifneq ($(OS),Windows_NT)
@@ -37,7 +38,7 @@ endif
 
 clean:
 ifeq ($(OS),Windows_NT)
-	powershell -Command "Remove-Item -Path 'prog.exe', 'src/*.o', 'graphs/graph.png' -Force -ErrorAction SilentlyContinue"
+	powershell -Command "Remove-Item -Path 'prog.exe', 'src/*.o', 'graphs/*.dot', 'graphs/*.png' -Force -ErrorAction SilentlyContinue"
 else
 	-rm -f $(EXEC) $(OBJ) graphs/graph.png
 endif

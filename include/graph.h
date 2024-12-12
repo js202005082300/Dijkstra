@@ -32,6 +32,8 @@ NodeList* add_node(int dest, int weight);
 void add_edge(Graph *g, int src, int dest, int weight);
 void print_graph(Graph *g);
 void display_graph(Graph *g);
+void print_shortest_paths(Graph *g, int dist[], int pred[]);
+void display_graph_state(Graph *g, int iteration, bool sptSet[]);
 void free_graph(Graph *g);
 
 #endif // __GRAPH_H__

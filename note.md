@@ -291,6 +291,28 @@ end
 
 Pseudo-code de l'algorithme de Dijkstra [Blondel, 2014]
 
+Entrées :
+G = (S, A) un graphe avec une pondération positive des arcs,
+poids des arcs,
+s_deb un sommet de S
+
+P := ∅
+d[a] := +∞ pour chaque sommet a
+d[s_deb] = 0
+
+Tant qu'il existe un sommet hors de P
+    Choisir un sommet a hors de P de plus petite distance d[a]
+    Mettre a dans P
+    Pour chaque sommet b hors de P voisin de a
+       Si d[b] > d[a] + poids(a, b)
+           d[b] = d[a] + poids(a, b)
+           prédécesseur[b] := a
+    Fin Pour
+Fin Tant Que
+
+source : https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra
+
+
 ## Sources
 
 https://www.youtube.com/watch?v=YEjUnoca6zs&t=102s

@@ -4,7 +4,6 @@ chcp 65001
 ::@param token Github
 
 set "message="
-@REM set "message="
 https://github.com/js202005082300/Dijkstra
 set "UTILISATEUR=js202005082300"
 set "DEPOT=Dijkstra"
