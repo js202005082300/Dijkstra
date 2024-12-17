@@ -1,48 +1,10 @@
-# Dijkstra
-
-# L'exécution de Dijkstra
-
-## Spécifiez le problème
-
-Explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
-
-### Problème de plus court chemin (PCC) (avec des distances positives)
-
-Données soit :  
-- Un graphe orienté G=(V,E)
-- Une source s ∈ V
-- Une fonction positive de pondération des arcs (w:E → ℝ^+) avec ( w(a,b)=10, w(b,c)=2, w(c,d)=9, w(d,e)=4, w(a,c)=5, w(b,d)=1, w(c,b)=3, w(c,e)=2, w(e,b)=2, w(e,d)=6 ).
-- G=(V,E) et s=a
-
-Problème : Trouver un plus court chemin de s vers tout autre sommet de G 
-
-Distance/poids du chemin <a, c, b, d> : w(a,c)+w(c,b)+w(b,d)=5+3+1=9 
-
-## Structure de données
-
-### Quid des distances
-
-Les tableaux de valeur phi vont être mis à jour au fil de l'algo et à la fin la distance optimale dans le tableau :
-
-    Φ[i] : distance d’un pcc de s à i 
-
-### Quid des chemins
-
-    P[i] = j : j possède i dans un pcc de s à i 
-
-Ce qui signifie que p de i vaut j si i est le prédecesseur immédiat dans le pcc que l’on a identifié entre s et i 
-
-Si on possède le prédécesseur de chaque sommet, on peut reconstituer l’ensemble des pcc depuis s. 
-
-## Grandes lignes de l'algo de Dijkstra
-
-    φ[i]:distance d’un pcc de s à i 
-
-    ρ[i]=j : j précède i dans un pcc de s à i 
-
-### Algorithme de Dijkstra
-
+D'après la partie de spécification de mon algo de Dijkstra, peux tu m'aider à répondre à cette question : `## 4. En vos propres mots, expliquez comment fonctionne l'algorithme. Décrivez de manière intuitive pourquoi l’implémentation produit un résultat correct par rapport à vos spécifications.` en utilisant mon code avec comme cannevas ceci 
 ```
+# L'exécution de Dijkstra
+Les tableaux de valeur phi vont être mis à jour au fil de l'algo et à la fin la distance optimale dans le tableau :
+    φ[i]:distance d’un pcc de s à i 
+    ρ[i]=j : j précède i dans un pcc de s à i 
+"""
 (init) 
     ∀v∈V,φ[v]=+∞,ρ[v]=? 
     φ[s]=0 
@@ -56,7 +18,7 @@ Tant que Q est non vide :
             (màj)
                 φ[v] = φ[u] + w(u,v)
                 ρ[v] = u
-```
+"""
 
 <table>
   <tr>
@@ -111,8 +73,6 @@ Donc φ[c] et ρ[c] sont meilleurs que l’on met à jour : (5,a) et toutes les 
 
 Après ceci, nous avons fini la première itération de l'algorithme.
 
----
-
 Et ainsi de suite, on prend à nouveau un sommet dans Q où φ est minimum lorsque Q vaut actuellement {b,c,d,e} c’est à dire c qui vaut 5 car a vaut 0, b vaut 10 et d et e qui valent +∞. 
 
 On a finis la première itération de l’algorythme. 
@@ -120,8 +80,6 @@ On a finis la première itération de l’algorythme.
 On choisit le sommet c tel que φ  est le minimum dans Q dont le minimum dans Q entre 10, 5, plus l’infini et plus l’infini , hé bien c’est 5 donc le sommet choisi est le sommet c et on le retire de Q. 
 
 On commence par examiner les voisins de C : B,D,E et pour chacun de ces voisins on va regarder si on ne trouve pas un meilleur chemin passant par C .
-
----
 
 Vérifier si on trouve un meilleur chemin en passant par b : 
 
@@ -132,8 +90,6 @@ Vérifier si on trouve un meilleur chemin en passant par b :
 On fait donc la mise à jour : (8,c) dans la colonne b pour le sommet c. 
 
 Idem pour d et e, pour atteindre le sommet d (14,c) est mieux que +∞, et pour atteindre le sommet e (7,c) est mieux que +∞. 
-
----
 
 On reprend les itérations suivantes, et ainsi parmi Q, quel est celui qui a le φ minimum, c’est e dont la distance φ vaut 7. On retire e de Q et on examine les voisins de e en commençant par b : 
 
@@ -149,9 +105,7 @@ Comme c’est meilleur que φ , on fait la mise à jour avec cette valeur de d (
 
 Idem pour les deux dernier sommets pour lesquelles on marque la progression de l’algorithme. 
 
-On retire le dernier sommet `Ø` sachant que d n’as qu’un seul voisin {c} et on peux vérifier la fin du déroulement de l’algorithme 
-
----
+On retire le dernier sommet `Ø` sachant que d n’as qu’un seul voisin {c} et on peux vérifier la fin du déroulement de l’algorithme
 
 Maintenant que Q est vide, la condition de « Tant que » de l’agorithme n’est plus satisfaite donc l’algorithme le termine. 
 
@@ -171,43 +125,11 @@ On a donc la solution qui répond à notre problème et qui nous donnes tout les
 
 Et comme le plus court chemin est fait de plus court chemin, on a aussi le plus court chemin entre A et C et cetera. 
 
-## Autre exemple : 
-    - un graphe orienté G=(V,E) 
-    - s=a 
-    - Une fonction positive de pondération des arcs (w:E → ℝ^+) avec ( w(b,a)=1, w(a,c)=4, w(a,d)=10, w(a,e)=9, w(c,b)=2, w(b,e)=1, w(d,c)=2, w(e,c)=1, w(c,e)=4, w(d,e)=6, w(e,d)=2). 
-    - G=(V,E) et s=a 
+```
 
-Tableau pour suivre l’exécution pas à pas. 
 
-| u   | Q                | Γ⁺(u)     | φ.ρ                              |
-|     |                  |           | a    | b    | c    | d    | e    |
-|-----|------------------|-----------|------|------|------|------|------|
-| -   | {a, b, c, d, e}  | -         | 0, ? | +∞,? | +∞,? | +∞,? | +∞,? |
-| a   | {b, c, d, e}     | {c, d, e} | 0, ? | +∞,? | 4,a  | 10,a | 9,a  |
-| c   | {b, d, e}        | {e, b}    | 0, ? | 6,c  | 4,a  | 10,a | 8,c  |
-| e   | {b, d}           | {a, e}    | 0, ? | 6,c  | 4,a  | 10,a | 7,b  |
-| b   | {d}              | {d, c}    | 0, ? | 6,c  | 4,a  | 9,e  | 7,b  |
-| d   | Ø                | {e, c}    | 0, ? | 6,c  | 4,a  | 9,e  | 7,b  |
 
-## Preuve d’optimalité
-
-Pourquoi l’agorithme de Dijkstra calcul bien le plus court chemin ? 
-
-L’ensemble W=V\Q est l’ensemble des sommets déjà traité à chaque itération. W est le complémentaire de Q dans V. A la fin de l’algorithme, Q est vide et W vaut l’ensemble de tous les sommets et obtiens l’arborescence des plus court chemins. 
-
-La signification de W qui progresse à chaque itération. 
-
-## Teminaison 
-
-La terminaison est assez clair car on a commencé avec un Q initialisé à tous les sommets du graphe. 
-
-n sommets dans le graphe, vaut n sommets dans Q, et à chaque itération, on en retire un tant que Q est non vide. 
-
-## Optimalité
-
-Optimalité : 
-    À la fin de l’algorithme, pour tout x ∊ V 
-    φ[x] : plus petite distance pour aller de s à x 
+```
 
 ### Prouvons par récurence : 
 
@@ -252,81 +174,130 @@ note : pour tous les voisins de u, on a potentiellement pê trouvé un chemin pl
 
     rappel : (a) Un pcc de s à u n’utilise que des sommets de W 
 
-+ À la fin W=V et (P) établit l’optimalité de Dijkstra. 
++ À la fin W=V et (P) établit l’optimalité de Dijkstra.
+```
 
-### Restriction aux distances positives 
 
-Poids négatifs = contre exemple 
-w(s,b)=2,w(s,c)=3,w(c,b)=-2
-Si on exécute Dijkstra, on va trouver une distance pour atteindre B valant 2 alors que le plus court chemin de S à B 1 car 3-2.
-C'est en effet cette propriété (a) qui n'est pas vrai lorsqu'on a une distance négative.
+Bien sûr, voici une explication détaillée de chaque itération de l'algorithme de Dijkstra, en tenant compte des spécifications pré- et post-conditions, et formatée en LaTeX pour être copiable dans un fichier .md :
 
-Exécution de Dijkstra mais le pcc de s à b vaut 1.
+```markdown
+# L'exécution de Dijkstra
 
-Voilà pour la preuve de l'optimalité de Dijkstra.
+Les tableaux de valeur $\phi$ vont être mis à jour au fil de l'algorithme et à la fin, la distance optimale dans le tableau :
+- $\phi[i]$: distance d’un plus court chemin (PCC) de $\text{src}$ à $i$
+- $\rho[i]=j$: $j$ précède $i$ dans un PCC de $\text{src}$ à $i$
 
-                    Dijkstra        Bellman-Ford
-Poids négatifs      NON             OUI
-Compléxité          O(n2+m)         O(n,m)
-                    O(nlog(n)+m)    
-Circuit négatifs    NON             NON
+## Initialisation
+```c
+for (int i = 0; i < V; i++) {
+    dist[i] = INT_MAX;
+    sptSet[i] = false;
+    pred[i] = -1;
+}
+dist[src] = 0;
+```
 
-* Circuit négatifs/absorbants. La valeur du pcc de s à e n'est pas définie.
+## Itérations
 
-## Compléxité
+### Première itération
+- Choisir le sommet $u$ avec $\phi[u]$ minimum : $u = a$
+- Mettre à jour les distances des voisins de $u$ : $b$ et $c$
 
-Algorithme de Dijkstra : |V|=n|E|=m
-(init) 
-    ∀v∈V,φ[v]=+∞,ρ[v]=? 
-    φ[s]=0 
-    Soit Q un ensemble de sommets initialisé à V 
-Tant que Q est non vide : 
-    u ← un sommet de Q avec φ[u] minimum 
-    Retirer u de Q 
-    Pour tout v ∈ Γ⁺(u) : (v successeur de u) 
-        si (φ[v]>φ[u]+w(u,v)) alors
-            (màj)
-                φ[v] = φ[u] + w(u,v)
-                ρ[v] = u
+$$
+\phi[b] = \infty > \phi[a] + w(a, b) = 0 + 10 = 10 \\
+\Rightarrow \phi[b] = 10 \\
+\Rightarrow \rho[b] = a
+$$
 
-begin
-    S=0; S̄=V
-    d(i)=∞ ∀i∈V
-    d(s)=0, pred(s)=0
-    while |S| < n, do
-        begin
-            let i = arg min {d(j) : j ∈ S̄}
-            S = S ∪ {i}
-            S̄ = S̄ \ {i}
-            for each j ∈ V⁺(i) , do
-                if d(j) > d(i) + δ(i,j)
-                    d(j) = d(i) + δ(i,j)
-                    pred(j) = i
-                end
-            end
-        end
-    end
-end
+$$
+\phi[c] = \infty > \phi[a] + w(a, c) = 0 + 5 = 5 \\
+\Rightarrow \phi[c] = 5 \\
+\Rightarrow \rho[c] = a
+```
 
-Pseudo-code de l'algorithme de Dijkstra [Blondel, 2014]
+| u   | Q               | $\Gamma^+(u)$ | $\phi, \rho$       |
+|-----|-----------------|---------------|--------------------|
+| -   | {a, b, c, d, e} | -             | 0, ?  $\infty$, ?  $\infty$, ?  $\infty$, ?  $\infty$, ? |
+| a   | {b, c, d, e}    | {b, c}        | 0, ?  10, a  5, a   $\infty$, ?  $\infty$, ? |
 
-Entrées :
-G = (S, A) un graphe avec une pondération positive des arcs,
-poids des arcs,
-s_deb un sommet de S
+### Deuxième itération
+- Choisir le sommet $u$ avec $\phi[u]$ minimum : $u = c$
+- Mettre à jour les distances des voisins de $u$ : $b, d, e$
 
-P := ∅
-d[a] := +∞ pour chaque sommet a
-d[s_deb] = 0
+$$
+\phi[b] = 10 > \phi[c] + w(c, b) = 5 + 3 = 8 \\
+\Rightarrow \phi[b] = 8 \\
+\Rightarrow \rho[b] = c
+$$
 
-Tant qu'il existe un sommet hors de P
-    Choisir un sommet a hors de P de plus petite distance d[a]
-    Mettre a dans P
-    Pour chaque sommet b hors de P voisin de a
-       Si d[b] > d[a] + poids(a, b)
-           d[b] = d[a] + poids(a, b)
-           prédécesseur[b] := a
-    Fin Pour
-Fin Tant Que
+$$
+\phi[d] = \infty > \phi[c] + w(c, d) = 5 + 2 = 7 \\
+\Rightarrow \phi[d] = 7 \\
+\Rightarrow \rho[d] = c
+$$
 
-source : https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra
+$$
+\phi[e] = \infty > \phi[c] + w(c, e) = 5 + 2 = 7 \\
+\Rightarrow \phi[e] = 7 \\
+\Rightarrow \rho[e] = c
+```
+
+| u   | Q               | $\Gamma^+(u)$ | $\phi, \rho$       |
+|-----|-----------------|---------------|--------------------|
+| c   | {b, d, e}       | {b, d, e}     | 0, ?  8, c   5, a   7, c   7, c |
+
+### Troisième itération
+- Choisir le sommet $u$ avec $\phi[u]$ minimum : $u = e$
+- Mettre à jour les distances des voisins de $u$ : $b, d$
+
+$$
+\phi[b] = 8 > \phi[e] + w(e, b) = 7 + 2 = 9 \\
+\Rightarrow \phi[b] = 8 \\
+\Rightarrow \rho[b] = c
+$$
+
+$$
+\phi[d] = 7 > \phi[e] + w(e, d) = 7 + 6 = 13 \\
+\Rightarrow \phi[d] = 13 \\
+\Rightarrow \rho[d] = e
+```
+
+| u   | Q               | $\Gamma^+(u)$ | $\phi, \rho$       |
+|-----|-----------------|---------------|--------------------|
+| e   | {b, d}          | {b, d}        | 0, ?  8, c   5, a   13, e  7, c |
+
+### Quatrième itération
+- Choisir le sommet $u$ avec $\phi[u]$ minimum : $u = b$
+- Mettre à jour les distances des voisins de $u$ : $c, d$
+
+$$
+\phi[d] = 13 > \phi[b] + w(b, d) = 8 + 9 = 17 \\
+\Rightarrow \phi[d] = 13 \\
+\Rightarrow \rho[d] = e
+```
+
+| u   | Q               | $\Gamma^+(u)$ | $\phi, \rho$       |
+|-----|-----------------|---------------|--------------------|
+| b   | {d}             | {c, d}        | 0, ?  8, c   5, a   13, e  7, c |
+
+### Cinquième itération
+- Choisir le sommet $u$ avec $\phi[u]$ minimum : $u = d$
+- Mettre à jour les distances des voisins de $u$ : $c$
+
+$$
+\phi[c] = 5 \leq \phi[d] + w(d, c) = 13 + 2 = 15 \\
+\Rightarrow \phi[c] = 5 \\
+\Rightarrow \rho[c] = a
+```
+
+| u   | Q               | $\Gamma^+(u)$ | $\phi, \rho$       |
+|-----|-----------------|---------------|--------------------|
+| d   | Ø               | {c}           | 0, ?  8, c   5, a   13, e  7, c |
+
+## Conclusion
+À la fin de l'algorithme, les tableaux $\phi$ et $\rho$ contiennent respectivement les distances minimales et les prédécesseurs pour chaque sommet, permettant de reconstruire les plus courts chemins depuis la source vers tous les autres sommets.
+
+L'implémentation produit un résultat correct car elle respecte les invariants de boucle, garantissant que les distances minimales sont correctement mises à jour et confirmées à chaque itération. Les spécifications de pré-conditions et post-conditions sont également respectées, assurant que l'algorithme fonctionne correctement pour tout graphe pondéré à arêtes non négatives.
+```
+
+N'hésitez pas à me dire si vous avez besoin d'autres modifications ou d'assistance supplémentaire !
