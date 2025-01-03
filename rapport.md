@@ -92,6 +92,8 @@ https://fr.wikipedia.org/wiki/Table_des_symboles_litt%C3%A9raux_en_math%C3%A9mat
 https://www.youtube.com/watch?v=85r5OTsl3Fk&list=PLjWBg-aa2xpLsXRPCDSnhutX0BP9Th-DB 
 https://fr.wikipedia.org/wiki/Table_des_symboles_litt%C3%A9raux_en_math%C3%A9matiques 
 
+https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php
+
 # Spécification
 
 > 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
@@ -106,21 +108,33 @@ int pred[V]; // Tableau des prédécesseurs
 
 Soit ( G = (V, E) ) un graphe où ( V ) est l'ensemble des sommets ((|V| = V₀)) et ( E \subseteq V \times V ) l'ensemble des arêtes pondérées par une fonction ( w : E \to \mathbb{R}^+ ).
 
-## Précondition (formalisée mathématiquement)
+## Précondition (P)
 
+<br>
+<br>
+<br>
+<br>
 <br>
 
 $$
+\text{pré} \equiv 
 \begin{aligned}
-\text{pré} \equiv & \\
-    & V = V₀ > 0 \land E = E₀ \geq 0 \land \text{src} = \text{src₀ } \land \\
-    & \forall (u, v) \in E₀ : w(u, v) \geq 0
+    & \text{Graph } G = (V, E) \text{ représenté par une liste d’adjacence, avec } V = V_0 > 0, E = E_0 \geq 0, \\
+    & \text{src} \in V, \quad \forall (u, v) \in E : w(u, v) \geq 0, \\
+    & \text{dist}[\text{src}] = 0, \quad \forall v \neq \text{src}, \text{dist}[v] = +\infty, \\
+    & \text{sptSet}[v] = \text{false}, \quad \forall v \in V, \\
+    & \text{Adj}[u] \text{ est une liste d’adjacence valide pour chaque } u \in V.
 \end{aligned}
 $$
 
-$V_0$ est le nombre de sommets ($V_0 > 0$).  
-$E_0$ est le nombre d'arêtes ($E_0 \geq 0$).  
-$\text{src}_0$ est le sommet source, $\text{src} \in [0, V-1]$.  
+
+- $V_0$ : Nombre de sommets dans le graphe ($V_0 > 0$).
+- $E_0$ : Nombre d’arêtes ($E_0 \geq 0$).
+- $\text{src}$ : Le sommet source, $\text{src} \in [0, V-1]$. 
+- $\text{dist[src]}$ : La distance minimale estimée depuis le sommet source vers lui-même, initialisée à 0.
+- $\text{dist[v]}$ : Les distances minimales estimées des autres sommets, initialisées à $\infty$.
+- $\text{sptSet[v]}$ : Booléen indiquant si le sommet $v$ a été traité dans l'arbre des plus courts chemins, initialisé à $\text{false}$.
+- $\text{Adj[u]}$ : Liste des voisins du sommet $u$, utilisée pour représenter les arcs sortants.
 Les poids des arêtes $w(u, v)$ sont non négatifs ($w(u, v) \geq 0$).  
 Cette formulation se base uniquement sur les arêtes existantes dans $E_0$, ce qui correspond à l'utilisation d'une liste d'adjacence comme structure de données.
 
@@ -188,78 +202,67 @@ void add_edge(Graph *g, int src, int dest, int weight) {
 
 Cette distinction permet de gérer les graphes orientés et non orientés de manière flexible et efficace.
 
-## Postcondition (formalisée mathématiquement)
+## Postcondition (Q)
 
 <br>
 
 $$
-\text{post} \equiv \forall v \in V : \text{dist}[v] = 
-\begin{cases} 
-\min\left(\sum\limits_{(u,v) \in P} w(u,v)\right) & \text{si } P \text{ existe} \\ 
-\infty & \text{sinon}
+\text{Q} \equiv \forall v \in V : \begin{cases} 
+\varphi[v] = \min \left( \sum_{k=0}^{|P|-2} w(u_k, u_{k+1}) \right), & \text{si un chemin } P \text{ existe de } src \text{ à } v, \\
+\varphi[v] = +\infty, & \text{si aucun chemin n’existe}.
 \end{cases}
 $$
 
-Pour chaque sommet $v$, $\text{dist}[v]$ contient la distance minimale depuis le sommet source $\text{src}$ jusqu'à $v$. Si un chemin $P$ existe de $\text{src}$ à $v$, alors $\text{dist}[v]$ contient la somme minimale des poids des arêtes de $P$. Si aucun chemin n'existe, $\text{dist}[v] = \infty$.
+Pour chaque sommet $v$ :
+- Si un chemin $P$ existe de $\text{src}$ à $v$, alors la distance minimale $\phi[v]$ correspond à la somme des poids des arêtes d’un chemin $\text{P}$ optimal de src à v.
 
-### Vérification dans le code
-La distance initiale des sommets est définie comme $\infty$ : `dist[i] = INT_MAX`.  
-La distance est mise à jour uniquement si un chemin existe, via la condition :
-```c
-if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
-    dist[v] = dist[u] + tmp->weight;
-}
-```
-Les sommets inatteignables depuis la source ne sont jamais mis à jour, donc $\text{dist}[v]$ reste $\infty$.
+> $$
+\text{Indices de la somme : } k=0 \text{ à } \left| P \right| - 2 \text{ parcourt les } \left| P \right| - 1 \text{ sommets du chemin } P = (u_0, u_1, \ldots, u_{\left| P \right| - 1}). \text{ Chaque arête du chemin } P \text{ est représentée par } w(u_k, u_{k+1}), \text{ où } k \text{ est l’indice du sommet source de l’arête.}
+$$
 
-Lorsque j'utilisais une matrice d'adjacence, ma post-condition était :
+- Si aucun chemin $\text{P}$ n'existe, alors $\varphi[v] = +\infty$.
+
+### Formulation pour une matrice d’adjacence
+
+Si le graphe est représenté par une matrice d’adjacence, la postcondition devient :
 
 <br>
 
 $$
-\text{post} \equiv \forall v (0 \leq v < V_0) : \text{dist}[v] = \min\left(\sum_{(u,w) \in P} \text{graph}[u][w]\right) \text{ où } P \text{ est un chemin de } \text{src}_0 \text{ à } v
+Q \equiv \forall v \in V : \left\{ \phi[v] = \min \left( \sum_{k=0}^{\left| P \right| - 2} \text{graph}[u_k][u_{k+1}] \right), \text{ si un chemin } P \text{ existe de src à } v, \phi[v] = +\infty, \text{ si aucun chemin n’existe.} \right\}
 $$
 
-Il est important de rappeler que pour chaque sommet $v$, $\text{dist}[v]$ contient la distance minimale depuis le sommet source $\text{src}_0$ jusqu'à $v$, mais en relation avec les listes d'adjacence.
-
-
-## Invariant de boucle (infos)
-Pendant l'exécution de l'algorithme, après chaque itération $k$, l'invariant suivant est satisfait :
-
-+ Invariant de validité :
-Pour chaque sommet $u$ dans l'ensemble $S_k$ (les sommets pour lesquels la distance minimale a été confirmée après $k$ itérations), $\text{dist}[u]$ est la distance minimale depuis la source $\text{src}$ jusqu'à $u$.
-
+#### Exemple :
 $$
-\forall u \in S_k : \text{dist}[u] = \min(\text{dist}(\text{src}, u))
+\text{graph} = \begin{bmatrix}
+0 & 2 & +\infty & 4 \\
++\infty & 0 & 1 & +\infty \\
++\infty & +\infty & 0 & 3 \\
++\infty & +\infty & +\infty & 0
+\end{bmatrix}
 $$
 
-+ Invariant sur les distances :
-Pour chaque sommet $v$ qui n'est pas dans $S_k$ (les sommets qui n'ont pas encore été traités), $\text{dist}[v]$ est une estimation de la distance minimale depuis la source $\text{src}$ jusqu'à $v$.
+Pour un chemin $P = (0, 1, 2, 3)$, la somme des poids est donnée par :
 
 $$
-\forall v \notin S_k : \text{dist}[v] \geq \min(\text{dist}(\text{src}, v))
+\sum_{k=0}^{\left| P \right| - 2} \text{graph}[u_k][u_{k+1}] = \text{graph}[0][1] + \text{graph}[1][2] + \text{graph}[2][3] = 2 + 1 + 3 = 6.
 $$
 
-+ Invariant de mise à jour :
-Pour chaque arête $(u, v)$ dans le graphe, si $u$ est dans $S_k$ et $v$ ne l'est pas, alors $\text{dist}[v]$ est au moins $\text{dist}[u]$ plus le poids de l'arête $(u, v)$.
+Ainsi, la distance minimale $\phi[3]$ est 6.
 
-$$
-\forall (u, v) \in E : \text{dist}[v] \leq \text{dist}[u] + w(u, v)
-$$
+### Vérification dans le code
 
-+ Commentaires sur votre algorithme : Les trois propriétés mentionnées ci-dessus garantissent que l'algorithme converge correctement. Ces invariants sont maintenus grâce à l'exploration systématique des sommets adjacents et la mise à jour des distances via les conditions sur $\text{sptSet}[v]$ et $\text{dist}[v]$.
-
+La distance initiale des sommets est définie comme $∞$ : $dist[i] = \text{INT\_MAX}$. Les distances sont mises à jour à l'aide de la fonction explicite $min()$ :
 ```c
-if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
-    dist[v] = dist[u] + tmp->weight;
+if (!sptSet[v] && dist[u] != INT_MAX) {
+    int new_dist = dist[u] + tmp->weight;
+    dist[v] = min(dist[v], new_dist);
+    if (dist[v] == new_dist) {
+        pred[v] = u; // Mise à jour du prédécesseur
+    }
 }
 ```
-
-Convergence : À la fin de l'algorithme, $S_k$ contient tous les sommets atteignables depuis $\text{src}$, et $\text{dist}[v]$ est valide pour tous les sommets $v$.
-
-```c
-// boucles du code
-```
+Les sommets inatteignables conservent leur valeur $∞$, et $pred[v]$ est mis à jour uniquement si une distance minimale est trouvée.
 
 
 # Implémentation
@@ -268,6 +271,8 @@ Convergence : À la fin de l'algorithme, $S_k$ contient tous les sommets atteign
 
 ```c
 #include "dijkstra.h"
+
+int min(int a, int b);
 
 /**
  * Algorithme de Dijkstra sans Min-Heap.
@@ -309,9 +314,12 @@ void dijkstra_simple(Graph *graph, int src) {
         NodeList* tmp = graph->tab_neighbours[u].head;
         while (tmp != NULL) {
             int v = tmp->dest; // Pour tout v ∈ Γ⁺(u)
-            if (!sptSet[v] && dist[u] != INT_MAX && tmp->weight + dist[u] < dist[v]) {
-                dist[v] = dist[u] + tmp->weight; // φ[v] = φ[u] + w(u,v)
-                pred[v] = u; // ρ[v] = u
+            if (!sptSet[v] && dist[u] != INT_MAX) {
+                int new_dist = dist[u] + tmp->weight;
+                dist[v] = min(dist[v], new_dist);
+                if (dist[v] == new_dist) {
+                    pred[v] = u; // ρ[v] = u
+                }
             }
             tmp = tmp->next;
         }
@@ -322,6 +330,16 @@ void dijkstra_simple(Graph *graph, int src) {
 
     // Afficher les distances
     print_arr(dist, V);
+}
+
+/**
+ * Renvoie un ternaire du minimum entre deux entiers.
+ * @param a Premier entier.
+ * @param b Deuxième entier.
+ * @return Le plus petit des deux entiers.
+ */
+int min(int a, int b) {
+    return (a < b) ? a : b;
 }
 ```
 - $V$ : Nombre total de sommets.
@@ -390,100 +408,108 @@ $\text{dist}[3] = 4$
 
 L'algorithme de Dijkstra permet de trouver les plus courts chemins depuis un sommet source $\text{src}$ vers tous les autres sommets d'un graphe $G = (V, E)$, à condition que les poids des arêtes soient non négatifs ($w(u, v) \geq 0 \, \forall (u, v) \in E$).
 
-Données soit :  
-- Un graphe orienté G=(V,E)
-- Une source s ∈ V
-- Une fonction positive de pondération des arcs (w:E → ℝ^+) avec ( w(a,b)=10, w(b,c)=2, w(c,d)=9, w(d,e)=4, w(a,c)=5, w(b,d)=1, w(c,b)=3, w(c,e)=2, w(e,b)=2, w(e,d)=6 ).
-- G=(V,E) et s=a
+### Description
 
-Problème : Trouver un plus court chemin de s vers tout autre sommet de G
+On pose $\phi[v]$ comme la distance estimée actuelle du sommet $v$ depuis la source, équivalente à dist[v] dans le code.  
+On pose $\rho[v]$ comme le prédécesseur de $v$ sur le chemin minimal, équivalent à pred[v] dans le code.  
+On pose $\text{sptSet}[v]$ comme un indicateur booléen indiquant si $v$ a été traité, équivalent à sptSet[v] dans le code.  
+Lorsque $\text{sptSet}[v] = \text{true}$, cela signifie que le plus court chemin vers $v$ a été trouvé.  
+On pose $\Gamma^+(u)$ comme l'ensemble des voisins directs (successeurs) du sommet $u$, équivalent à graph->tab_neighbours[u] dans le code.  
 
-1. Initiatlisation
++ Initialisation :
+    - $\phi[v] = +\infty$ pour tous les sommets sauf $\text{src}$, où $\phi[\text{src}] = 0$.
+    - $\rho[v] = ?$ pour tous les sommets.
+    - Ensemble $Q$ contenant tous les sommets ($Q = V$).
 
-L'algorithme initialise $\phi[v] = +\infty$ pour tous les sommets $v$, sauf pour la source $\text{src}$, où $\phi[\text{src}] = 0$. Les prédécesseurs $\rho[v]$ sont initialisés à une valeur indéfinie ($?$). Un ensemble $Q$ contient tous les sommets non encore traités.
-```c
-∀v∈V, φ[v]=+∞, ρ[v]=? 
-φ[src]=0 
-Q = {a, b, c, d, e}
-```
-<table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th> </tr> <tr> <td>-</td><td>{a, b, c, d, e}</td><td>-</td><td>0, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td> </tr> </table>
++ Traitement principal :
+    - À chaque itération, sélectionnez $u \in Q$ avec la plus petite distance $\phi[u]$.
+    - Marquez $u$ comme traité ($\text{sptSet}[u] = \text{true}$).
+    - Mettez à jour les distances des voisins de $u$ :
+    - Si $\phi[u] + w(u, v) < \phi[v]$, alors $\phi[v] = \phi[u] + w(u, v)$.
 
-> À chaque itération, le sommet $u$ avec la plus petite distance $\phi[u]$ dans $Q$ est sélectionné (garantissant que $\phi[u]$ est optimal).  
-> Ce sommet $u$ est retiré de $Q$ et marqué comme "traité".  
-> Les voisins $v$ de $u$ sont explorés pour mettre à jour leur distance estimée $\phi[v]$, selon la formule :  
-> $\phi[v] = \min(\phi[v], \phi[u] + w(u, v))$  
-> Si une mise à jour est effectuée, le prédécesseur $\rho[v]$ est mis à jour : $\rho[v] = u$.
++ Condition d'arrêt : L'algorithme s'arrête lorsque $Q$ est vide ou que toutes les distances finales sont calculées.
+
++ Résultats finaux :
+    - $\phi[v]$ contient la distance minimale depuis $\text{src}$ jusqu'à $v$.
+    - $\rho[v]$ permet de reconstruire les chemins minimaux.
+
+### Exemple
+
+![Diagramme Graphviz](/graphs/digraph.png)
+
+Exemple de grapge :  
+- Un graphe orienté $G = (V, E)$ avec $V = \{a, b, c, d, e\}$.
+- Une source $\text{src} \in V$ avec $\text{src} = a$.
+- Une fonction positive de pondération des arcs $w : E \rightarrow \mathbb{R}^+$ avec \\
+$w(a, b) = 10, w(b, c) = 2, w(c, d) = 9, w(d, e) = 4, w(a, c) = 5, w(b, d) = 1, w(c, b) = 3, w(c, e) = 2, w(e, b) = 2, w(e, d) = 6$.
+
+Problème : Trouver un plus court chemin de $\text{src}$ vers tout autre sommet de $\text{G}$.
+
+0. Données initiales :
+Distances : $\forall v \in V, \phi[v] = +\infty$ \
+Prédéceseurs : $\forall v \in V, \rho[v] = -1$ \
+Source : $\phi[\text{src}] = 0$ \
+Sommets non-traités : $Q = \{a, b, c, d, e\}$
+
+1. Initialisation
+Avant la première itération :
+<table>
+<tr><th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr>
+<tr><td>-</td><td>{a, b, c, d, e}</td><td>-</td><td>0, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td></tr>
+</table>
+
+Sélectionner $u$ avec la plus petite $\phi[u]$ dans $Q$.
+Retirer $u$ de $Q$ et le marquer comme traité.
+Mettre à jour $\phi[v]$ pour chaque voisin $v$ de $u$.
+Si mise à jour, définir $\rho[v] = u$.
 
 2. Première itération ($u = a$)  
-Le sommet $u = a$ est sélectionné car $\phi[a] = 0$ (le minimum dans $Q$).  
-On explore ses voisins $\Gamma^+(a) = \{b, c\}$.
-
-Mise à jour pour $b$ :
-
-$\phi[b] = \min(\phi[b], \phi[a] + w(a, b)) = \min(+\infty, 0 + 10) = 10$  
-$\rho[b] = a$
-
-Mise à jour pour $c$ :
-
-$\phi[c] = \min(\phi[c], \phi[a] + w(a, c)) = \min(+\infty, 0 + 5) = 5$  
-$\rho[c] = a$
-
-Nouvel état des tableaux :
++ Sélection de $u = a$ car $\phi[a] = 0$.  
++ Exploration des voisins : $\Gamma^+(a) = {b, c}$.  
+  - Mise à jour pour $b$ : $\phi[b] = 0 + 10 = 10, \rho[b] = a$.  
+  - Mise à jour pour $c$ : $\phi[c] = 0 + 5 = 5, \rho[c] = a$.  
 
 <table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th> </tr> <tr> <td>a</td><td>{b, c, d, e}</td><td>{b, c}</td><td>0, ?</td><td>10, a</td><td>5, a</td><td>+∞, ?</td><td>+∞, ?</td> </tr> </table>
 
-3. Deuxième itération ($u = c$)  
-Le sommet $u = c$ est sélectionné car $\phi[c] = 5$ (le minimum dans $Q$).  
-On explore ses voisins $\Gamma^+(c) = \{b, d, e\}$.
+3. Deuxième itération $u = c$
 
-Mise à jour pour $b$ :
+Sélection de $u = c$ car $\phi[c] = 5$.  
++ Exploration des voisins : $\Gamma^+(c) = \{b, d, e\}$.  
++ Mise à jour pour $b$ : $\phi[b] = \min(10, 5 + 3) = 8, \rho[b] = c$.  
+  - Mise à jour pour $d$ : $\phi[d] = 5 + 9 = 14, \rho[d] = c$.  
+  - Mise à jour pour $e$ : $\phi[e] = 5 + 2 = 7, \rho[e] = c$.  
 
-$\phi[b] = \min(\phi[b], \phi[c] + w(c, b)) = \min(10, 5 + 3) = 8$  
-$\rho[b] = c$
+<table>
+<tr><th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr>
+<tr><td>c</td><td>{b, d, e}</td><td>{b, d, e}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>14, c</td><td>7, c</td></tr>
+</table>
 
-Mise à jour pour $d$ :
+4. Troisième itération $u = e$
 
-$\phi[d] = \min(\phi[d], \phi[c] + w(c, d)) = \min(+\infty, 5 + 9) = 14$  
-$\rho[d] = c$
++ Sélection de $u = e$ car $\phi[e] = 7$.
++ Exploration des voisins : $\Gamma^+(e) = \{b, d\}$.
+  - Mise à jour pour $d$ : $\phi[d] = \min(14, 7 + 6) = 13, \rho[d] = e$.
 
-Mise à jour pour $e$ :
+<table>
+<tr><th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr>
+<tr><td>e</td><td>{b, d}</td><td>{b, d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>13, e</td><td>7, c</td></tr>
+</table>
 
-$\phi[e] = \min(\phi[e], \phi[c] + w(c, e)) = \min(+\infty, 5 + 2) = 7$  
-$\rho[e] = c$
+5. Quatrième itération $u = b$
 
-Nouvel état des tableaux :
++ Sélection de $u = b$ car $\phi[b] = 8$.
++ Exploration des voisins : $\Gamma^+(b) = \{d\}$.
+  - Mise à jour pour $d$ : $\phi[d] = \min(13, 8 + 1) = 9, \rho[d] = b$.
 
-<table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th> </tr> <tr> <td>c</td><td>{b, d, e}</td><td>{b, d, e}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>14, c</td><td>7, c</td> </tr> </table>
+<table>
+<tr><th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th></tr>
+<tr><td>b</td><td>{d}</td><td>{d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>9, b</td><td>7, c</td></tr>
+</table>
 
-4. Troisième itération ($u = e$)  
-Le sommet $u = e$ est sélectionné car $\phi[e] = 7$.  
-On explore ses voisins $\Gamma^+(e) = \{b, d\}$.
+6. Cinquième itération $u = d$
 
-Mise à jour pour $d$ :
-
-$\phi[d] = \min(\phi[d], \phi[e] + w(e, d)) = \min(14, 7 + 6) = 13$  
-$\rho[d] = e$
-
-Nouvel état des tableaux :
-
-<table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th> </tr> <tr> <td>e</td><td>{b, d}</td><td>{b, d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>13, e</td><td>7, c</td> </tr> </table>
-
-5. Quatrième itération ($u = b$)  
-Le sommet $u = b$ est sélectionné car $\phi[b] = 8$.  
-On explore ses voisins $\Gamma^+(b) = \{d\}$.
-
-Mise à jour pour $d$ :
-
-$\phi[d] = \min(\phi[d], \phi[b] + w(b, d)) = \min(13, 8 + 1) = 9$  
-$\rho[d] = b$
-
-Nouvel état des tableaux :
-
-<table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th> </tr> <tr> <td>b</td><td>{d}</td><td>{d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>9, b</td><td>7, c</td> </tr> </table>
-
-6. Cinquième itération ($u = d$)  
 Le sommet $u = d$ est sélectionné car $\phi[d] = 9$.  
-Comme $d$ n’a pas de voisins non traités ($\Gamma^+(d) = \emptyset$), aucune mise à jour n'est effectuée.
+Comme $d$ n’a pas de voisins non traités ($\Gamma^+(d) = \emptyset$), aucune mise à jour n'est effectuée.  
 
 7. Terminaison
 
@@ -491,42 +517,69 @@ Comme $d$ n’a pas de voisins non traités ($\Gamma^+(d) = \emptyset$), aucune 
 
 L’ensemble $Q$ est désormais vide. Les valeurs finales de $\phi$ et $\rho$ représentent les distances minimales et les prédécesseurs pour les plus courts chemins depuis $a$.
 
-<table> <tr> <th>u</th><th>Q</th><th>Γ⁺(u)</th><th colspan="5">φ.ρ</th> </tr> <tr> <td></td><td></td><td></td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td> </tr> <tr> <td>-</td><td>{a, b, c, d, e}</td><td>-</td><td>0, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td> </tr> <tr> <td>a</td><td>{b, c, d, e}</td><td>{b, c}</td><td>0, ?</td><td>10, a</td><td>5, a</td><td>+∞, ?</td><td>+∞, ?</td> </tr> <tr> <td>c</td><td>{b, d, e}</td><td>{b, d, e}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>14, c</td><td>7, c</td> </tr> <tr> <td>e</td><td>{b, d}</td><td>{b, d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>13, e</td><td>7, c</td> </tr> <tr> <td>b</td><td>{d}</td><td>{c, d}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>9, b</td><td>7, c</td> </tr> <tr> <td>d</td><td>Ø</td><td>{c}</td><td>0, ?</td><td>8, c</td><td>5, a</td><td>9, b</td><td>7, c</td> </tr> </table>
-
 8. Résultat final :
 
 > $\phi[v]$ contient la distance minimale de $\text{src}$ à $v$.  
 > $\rho[v]$ permet de reconstituer les chemins minimaux.
 
-Distances minimales ($\phi$) :  
+Distances minimales ($\phi[v]$) :  
 $\phi[a] = 0$,  
 $\phi[b] = 8$,  
 $\phi[c] = 5$,  
 $\phi[d] = 9$,  
 $\phi[e] = 7$.  
 
-Chemins :
+Chemins minimaux $\rho[v]$ :
 
 $b \leftarrow c \leftarrow a$  
 $c \leftarrow a$  
 $d \leftarrow b \leftarrow c \leftarrow a$  
 $e \leftarrow c \leftarrow a$  
 
-## 5. Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
+## 5. Invariant de boucle pertinent pour l'algorithme de Dijkstra
 
-L’invariant de boucle pour l’algorithme de Dijkstra s’écrit comme suit :
+> Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
 
-$$I \equiv \forall v \in V : \begin{cases} 
-\text{dist}[v] = \min_{P \in P_{\text{src}, v}} \sum_{e \in P} w(e) & \text{si } v \in S, \\
-\text{dist}[v] \geq \min_{P \in P_{\text{src}, v}} \sum_{e \in P} w(e) & \text{si } v \notin S.
-\end{cases}$$
+### Elicitation de l'invariant
 
-Explications :
+L'invariant proposé est :
 
-$S$ est l'ensemble des sommets pour lesquels la distance minimale a été confirmée (traités : $\text{sptSet}[u] = \text{true}$).  
-$V \setminus S$ est l'ensemble des sommets non encore traités.  
-$P_{\text{src}, v}$ est l'ensemble des chemins de la source $\text{src}$ au sommet $v$.  
-$\sum_{e \in P} w(e)$ est la somme des poids des arêtes appartenant au chemin $P$.
+<br>
+
+$$
+I \equiv \forall v \in V : \begin{cases} 
+\varphi[v] = \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}), & \text{si } v \in sptSet, \\
+\varphi[v] \geq \min \left( \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}) \right), & \text{si } v \notin sptSet, \\
+\varphi[v] = +\infty, & \text{si } v \text{ est inaccessible}.
+\end{cases}
+$$
+
+Dans cet invariant, $\varphi[v]$ représente la distance estimée actuelle du sommet $v$ depuis la source $src$ dans l'algorithme de Dijkstra. $P$ est un chemin spécifique reliant la source $src$ au sommet $v$, composé de sommets $u_0, u_1, \ldots, u_k, \ldots, u_{|P|-1}$. La longueur de ce chemin est $|P|-1$, c'est-à-dire le nombre d'arêtes dans $P$. L'indice $k$ représente les arêtes dans le chemin $P$, chaque arête étant notée $w(u_k, u_{k+1})$. L'ensemble $sptSet$ contient les sommets déjà traités, inclus dans l'arbre des plus courts chemins.
+
+### Méthodologie structurée de la boucle
+
+L'algorithme de Dijkstra suit cette structure :
+
+```plaintext
+{R} // Précondition de la boucle
+INIT;
+{I} // Invariant vrai avant de rentrer dans la boucle
+while (B) {
+  ITER;
+  {I} // Invariant préservé à la fin du tour de boucle
+}
+{I et \neg B} // Invariant encore vrai, condition d'arrêt atteinte
+CLOT;
+{T} // Postcondition de la boucle
+```
+
+
+### Condition d'arrêt ($\neg B$)
+$$
+F = \emptyset,
+$$
+où $F$ est l'ensemble des sommets non encore traités. Lorsque $F$ est vide, l'algorithme s'arrête.
+
 
 ## 6. Analysez la complexité temporelle et spatiale « pire des cas » de l'algorithme. Justifiez votre analyse en fonction des différentes étapes de l'algorithme et des structures de données utilisées.
 
@@ -551,7 +604,7 @@ $$O(V^2 + E) = O(V^2).$$
 
 #### **Complexité spatiale**  
 L'algorithme utilise :  
-1. $$\text{dist}[], \text{pred}[], \text{sptSet}[]$$ :  
+1. $\text{dist}[], \text{pred}[], \text{sptSet}[]$ :  
    $$O(V).$$  
 2. Le graphe en liste d’adjacence :  
    $$O(V + E).$$
@@ -564,6 +617,10 @@ $$O(V + E).$$
 **Conclusion :**
 - **Temporelle** : $$O(V^2)$$  
 - **Spatiale** : $$O(V + E)$$.
+
+L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $$O(V^2)$$ car chaque sommet doit être recherché, prenant $$O(V)$$ temps. En utilisant une structure de données Min-Heap ou Fibonacci-Heap, la recherche est réduite à $$O(\log V)$$, améliorant la complexité à $$O(V \cdot \log V + E)$$, où $$E$$ est le nombre d'arêtes. Cette amélioration est bénéfique pour les graphes grands et clairsemés. Pour les graphes denses, l'implémentation avec Fibonacci-Heap est plus efficace.
+
+
 
 
 ## 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.

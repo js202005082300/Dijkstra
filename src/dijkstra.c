@@ -1,6 +1,5 @@
 #include "dijkstra.h"
 
-
 /**
  * Algorithme de Dijkstra sans Min-Heap.
  * @param graph Graph sous forme de liste d'adjacence.

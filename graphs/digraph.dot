@@ -1,5 +1,6 @@
 digraph my_graph
 {
+	rankdir=LR;
 	a -> b [label="10"];
 	b -> c [label="2"];
 	c -> d [label="9"];

@@ -70,10 +70,8 @@
 
 ## Utilisation de Graphviz
 
-Graphviz est un outil puissant pour la visualisation de graphes. Voici quelques commandes principales et un exemple de fichier `.dot`.
-
 ```ps1
-dot -Tpng my_graph.dot -o my_graph.png
+dot -Tpng digraph.dot -o digraph.png
 ```
 
 ### Commandes Principales
