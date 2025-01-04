@@ -1,6 +1,14 @@
 https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
 
-# Algorythme Dijkstra
+Jacquet Samuel  
+UNamur  
+IHDCB232 : Algorithmique 1  
+Travail individuel  
+
+# Algorithme de Dijkstra
+
+Année académique 2024-2025
+
 
 > A.1 Algorithme de Dijkstra : L'algorithme de Dijkstra est utile pour trouver le chemin le moins coûteux entre deux nœuds d’un graphe pondéré. Il nécessite l'utilisation d'une structure de données efficace comme une file de priorité (souvent implémentée avec un tas). Il est important de prouver que les nœuds déjà visités ont leur plus court chemin correctement calculé.
 
@@ -37,6 +45,7 @@ https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
 - **Gestion du trafic** : éviter les embouteillages.
 
 + Cas concrets
+...
 
 
 ### Sources
