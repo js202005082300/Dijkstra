@@ -3,7 +3,7 @@ chcp 65001
 
 ::@param token Github
 
-set "message="
+set "message=Question #7 - méthodes récursives"
 https://github.com/js202005082300/Dijkstra
 set "UTILISATEUR=js202005082300"
 set "DEPOT=Dijkstra"

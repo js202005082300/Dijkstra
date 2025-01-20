@@ -1,6 +1,52 @@
 #include "dijkstra.h"
 
 /**
+ * Trouve l'indice du sommet ayant la distance minimale parmi ceux qui ne sont pas encore traités.
+ * @param dist Tableau des distances actuelles.
+ * @param sptSet Tableau booléen indiquant si un sommet est traité.
+ * @param V Nombre de sommets dans le graphe.
+ * @return L'indice du sommet avec la distance minimale, ou -1 si aucun n'est trouvé.
+ */
+int findMinDistanceIndex(int dist[], Boolean sptSet[], int V) {
+    int min_dist = INT_MAX; // Initialisation de la valeur minimale à une valeur très élevée (infinie).
+    int minIndex = -1;      // Initialisation de l'indice du sommet minimum à -1 pour signaler une erreur si aucun n'est trouvé.
+
+    // Parcours non récursif pour trouver le sommet de distance minimale
+    for (int v = 0; v < V; v++) {  // Boucle qui parcourt tous les sommets du graphe
+        if (!sptSet[v] && dist[v] <= min_dist) {  // Si le sommet v n'est pas traité et sa distance est inférieure ou égale à min_dist
+            min_dist = dist[v];  // Mise à jour de la nouvelle distance minimale.
+            minIndex = v;        // Mise à jour de l'indice du sommet ayant la nouvelle distance minimale.
+        }
+    }
+
+    return minIndex;  // Retourner l'indice du sommet ayant la distance minimale (ou -1 si aucun sommet valide n'a été trouvé).
+}
+
+/**
+ * Fonction récursive pour trouver l'indice du sommet avec la plus petite distance parmi ceux qui ne sont pas encore traités.
+ * @param dist Tableau des distances actuelles.
+ * @param sptSet Tableau booléen indiquant si un sommet est traité.
+ * @param V Nombre total de sommets dans le graphe.
+ * @param i Indice du sommet actuel lors du parcours récursif.
+ * @param minIndex Indice du sommet ayant la distance minimale trouvée jusqu'à présent.
+ * @param minVal Valeur de la distance minimale trouvée jusqu'à présent.
+ * @return L'indice du sommet ayant la distance minimale, ou -1 si aucun n'est trouvé.
+ */
+int recursiveMinDistance(int dist[], Boolean sptSet[], int V, int i, int minIndex, int minVal) {
+    if (i == V)  // Cas de base : si l'indice i atteint la fin du tableau (tous les sommets ont été parcourus).
+        return minIndex;  // Retourner l'indice du sommet ayant la distance minimale trouvée.
+
+    // Si le sommet i n'est pas encore traité et que sa distance est inférieure à la distance minimale actuelle.
+    if (!sptSet[i] && dist[i] < minVal) {
+        minVal = dist[i];  // Mettre à jour la distance minimale avec la distance du sommet i.
+        minIndex = i;      // Mettre à jour l'indice du sommet avec la nouvelle distance minimale.
+    }
+
+    // Appel récursif pour le sommet suivant avec l'indice `i + 1`.
+    return recursiveMinDistance(dist, sptSet, V, i + 1, minIndex, minVal);
+}
+
+/**
  * Algorithme de Dijkstra sans Min-Heap.
  * @param graph Graph sous forme de liste d'adjacence.
  * @param src Sommet source pour les plus courts chemins.
@@ -24,14 +70,17 @@ void dijkstra_simple(Graph *graph, int src) {
     // Trouver le chemin le plus court pour tous les sommets
     for (int count = 0; count < V - 1; count++) {
         // Choisir le sommet de distance minimale parmi ceux qui ne sont pas encore traités
-        int u = -1;                 // Erreur si sommet non trouvé
-        int min_dist = INT_MAX;     // Initialiser à la valeur maximale
-        for (int v = 0; v < V; v++) {
-            if (!sptSet[v] && dist[v] <= min_dist) {
-                min_dist = dist[v]; // màj min_dist
-                u = v;              // màj le sommet avec la distance minimale
-            }
-        }
+        int u = findMinDistanceIndex(dist, sptSet, V);
+        int u = recursiveMinDistance(dist, sptSet, V, 0, -1, INT_MAX);
+
+        // int u = -1;                 // Erreur si sommet non trouvé
+        // int min_dist = INT_MAX;     // Initialiser à la valeur maximale
+        // for (int v = 0; v < V; v++) {
+        //     if (!sptSet[v] && dist[v] <= min_dist) {
+        //         min_dist = dist[v]; // màj min_dist
+        //         u = v;              // màj le sommet avec la distance minimale
+        //     }
+        // }
 
         if(u == -1) break; // Si aucun sommet n'a été trouvé, sortir de la boucle
         sptSet[u] = true;  // Marquer le sommet choisi comme traité

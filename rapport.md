@@ -49,59 +49,8 @@ Année académique 2024-2025
 
 
 ### Sources
-https://webcampus.unamur.be/pluginfile.php/50153/mod_resource/content/2/2019-2020.pdf
-https://www.geeksforgeeks.org/binary-heap/
-https://www.geeksforgeeks.org/heap-data-structure/
-https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
-https://d-michail.github.io/assets/teaching/data-structures/033_BinaryHeapImplementation.en.pdf
 
-[Blondel, 2014] Blondel, V. (2014). Mathématiques discrètes 1 : Théorie et algorithmique des graphes. Technical report, UCL/EPL. Cours LINMA1691.
-
-https://www.geeksforgeeks.org/dijkstras-shortest-path-algorithm-greedy-algo-7/
-https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/?ref=header_outind
-https://www.geeksforgeeks.org/greedy-algorithms/
-https://ils.bib.uclouvain.be/unamur
-https://www.unamur.be/fr/bump/bookalibrarian
-https://fr.piliapp.com/symbol/math/
-
-
-Szczesniak, I., & Woźna-Szcześniak, B. (n.d.). *Generic Dijkstra: correctness and tractability*. Czestochowa University of Technology, Department of Computer Science & Jan Długosz University in Czestochowa, Department of Mathematics and Computer Science. Retrieved from [arXiv](https://arxiv.org/pdf/2204.13547).
-
-Delhaye, V. (2015). *Le plus court chemin d’imposition des multinationales : application de l’algorithme de Dijkstra*. UCLouvain, Louvain School of Management. Retrieved from UCLouvain.
-
-
-Livres "Introduction to Algorithms" de Cormen (chapitres sur les graphes). => https://ils.bib.uclouvain.be/unamur/documents/1471273
-
-https://graphviz.org/docs/library/
-
-
-Champagne, J. (2023). Langage C #22 - Graphes. YouTube. https://www.youtube.com/watch?v=T5MU8NDMMj4 
-Champagne, J. (2024). Architecture - graphe. YouTube. https://www.youtube.com/watch?v=TwO8rCTFy1c
-
-https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra
-https://fr.wikipedia.org/wiki/Liste_d%27adjacence
-https://fr.wikipedia.org/wiki/Matrice_d%27adjacence
-https://fr.wikipedia.org/wiki/Liste_d%27adjacence
-https://lacl.u-pec.fr/dima/complexite/cours4.pdf
-
-https://perso.eleves.ens-rennes.fr/people/Julie.Parreaux/fichiers_agreg/info_dev/Dijkstra.pdf
-[1] Rivest R. Stein C. Cormen T., Leiserson C. Algorithmique, 3ème édition. Dunod, 2010
-
-http://yallouz.arie.free.fr/terminale_cours/2017-2018/tes-2017-2018-dijkstra.pdf
-
-https://pcsi1-saint-louis.ovh/site/images/Doc2223/ch22_Dijkstra.pdf
-
-http://dominique.frin.free.fr/terminales/exosTES-Dijkstra-cor.pdf
-
-https://www.normalesup.org/~dconduche/informatique/PT/Cours/Dijkstra.pdf
-
-https://www.youtube.com/watch?v=YEjUnoca6zs&t=102s
-https://fr.wikipedia.org/wiki/Table_des_symboles_litt%C3%A9raux_en_math%C3%A9matiques 
-
-https://www.youtube.com/watch?v=85r5OTsl3Fk&list=PLjWBg-aa2xpLsXRPCDSnhutX0BP9Th-DB 
-https://fr.wikipedia.org/wiki/Table_des_symboles_litt%C3%A9raux_en_math%C3%A9matiques 
-
-https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php
+Voir en fin de rapport.
 
 # Spécification
 
@@ -324,8 +273,10 @@ void dijkstra_simple(Graph *graph, int src) {
         while (tmp != NULL) {
             int v = tmp->dest; // Pour tout v ∈ Γ⁺(u)
             if (!sptSet[v] && dist[u] != INT_MAX) {
-                int new_dist = dist[u] + tmp->weight;
-                dist[v] = min(dist[v], new_dist);
+                int new_dist = dist[u] + tmp->weight; // φ[u] + w(u, v)
+
+                // Mise à jour de la distance minimale vers v si le chemin via u est plus court
+                dist[v] = min(dist[v], new_dist); // φ[v] = min(φ[v], φ[u] + w(u, v))
                 if (dist[v] == new_dist) {
                     pred[v] = u; // ρ[v] = u
                 }
@@ -630,9 +581,101 @@ $$O(V + E).$$
 L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $$O(V^2)$$ car chaque sommet doit être recherché, prenant $$O(V)$$ temps. En utilisant une structure de données Min-Heap ou Fibonacci-Heap, la recherche est réduite à $$O(\log V)$$, améliorant la complexité à $$O(V \cdot \log V + E)$$, où $$E$$ est le nombre d'arêtes. Cette amélioration est bénéfique pour les graphes grands et clairsemés. Pour les graphes denses, l'implémentation avec Fibonacci-Heap est plus efficace.
 
 
-
-
 ## 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.
+
+Partie choisie : Sélection et mise à jour des distances des voisins
+Une partie clé pour intégrer la récursivité dans l'algorithme de Dijkstra est la sélection du sommet ayant la plus petite distance et la mise à jour des distances des voisins. Nous explorons ici deux approches :
+
++ Une récursion pour sélectionner le sommet minimal.
++ Une récursion pour parcourir les voisins et mettre à jour leurs distances.
+
+### 1. Sélection récursive du sommet minimal
+La sélection du sommet minimal parmi les sommets non traités peut remplacer une boucle par une récursion. Voici la fonction récursive théorique :
+```c
+int recursiveMinDistance(int dist[], Boolean sptSet[], int V, int i, int minIndex, int minVal) {
+    if (i == V) return minIndex; // Cas de base : tous les sommets ont été parcourus.
+
+    if (!sptSet[i] && dist[i] < minVal) { 
+        return recursiveMinDistance(dist, sptSet, V, i + 1, i, dist[i]); // Mise à jour du minimum.
+    }
+    return recursiveMinDistance(dist, sptSet, V, i + 1, minIndex, minVal); // Passage au sommet suivant.
+}
+```
+#### Hypothèse d'induction
+Pour tout $i \in [0, V-1]$, la fonction récursive garantit que le sommet ayant la distance minimale parmi les $i+1$ premiers sommets non traités est retourné.
+
+#### Démonstration mathématique
+1. Cas de base : Si $i = 0$, la fonction vérifie uniquement le sommet initial. Elle retourne son indice si les conditions $\text{dist}[i] < \text{minVal}$ et $\text{sptSet}[i] = \text{false}$ sont remplies. Sinon, elle passe au sommet suivant.
+
+2. Pas inductif : Supposons que la fonction retourne correctement $\text{minIndex}$ pour $i$. À $i+1$ :
+
+    + Si $\text{dist}[i+1] < \text{minVal}$, alors $\text{minIndex}$ est mis à jour avec $i+1$.
+    + Sinon, $\text{minIndex}$ reste inchangé. La condition est préservée pour $i+1$.
+
+#### Complexité
++ Temporelle : $O(V)$.
++ Spatiale : $O(V)$ en raison de la pile d'appels récursifs.
+
+### 2. Mise à jour récursive des distances des voisins
+Après avoir sélectionné un sommet $u$, la mise à jour des distances de ses voisins peut également être effectuée récursivement.
+```c
+void recursiveUpdate(NodeList* tmp, int u, int dist[], int pred[], Boolean sptSet[]) {
+    if (tmp == NULL) return; // Cas de base : plus de voisins à traiter.
+
+    int v = tmp->dest;
+    if (!sptSet[v] && dist[u] != INT_MAX) {
+        int new_dist = dist[u] + tmp->weight;
+        dist[v] = (dist[v] > new_dist) ? new_dist : dist[v]; // Mise à jour de la distance minimale.
+        if (dist[v] == new_dist) pred[v] = u; // Mise à jour du prédécesseur.
+    }
+
+    recursiveUpdate(tmp->next, u, dist, pred, sptSet); // Appel récursif pour le voisin suivant.
+}
+```
+#### Hypothèse d'induction
+Pour tout $v \in \Gamma^+(u)$, où $\Gamma^+(u)$ est l'ensemble des voisins de $u$ :
+
+$$\phi[v] = \min(\phi[v], \phi[u] + w(u,v))$$
+
+#### Démonstration mathématique
+1. Cas de base : Si $\Gamma^+(u) = \emptyset$, la fonction retourne immédiatement, ce qui est correct.
+
+2. Pas inductif : Supposons que la mise à jour est correcte pour les $k$ premiers voisins. Pour le $(k+1)$-ème voisin $v$ :
+
+Si $\phi[u] + w(u, v) < \phi[v]$, alors $\phi[v]$ est mis à jour correctement.
+Sinon, $\phi[v]$ reste inchangé.
+
+#### Complexité
++ Temporelle : $O(d(u))$, où $d(u)$ est le degré de $u$.
++ Spatiale : $O(d(u))$ appels récursifs au maximum.
+
+### Intégration théorique dans Dijkstra
+Ces deux fonctions récursives peuvent être appelées dans l'algorithme principal de Dijkstra comme suit :
+```c
+while (count < V - 1) {
+    int u = recursiveMinDistance(dist, sptSet, V, 0, -1, INT_MAX); // Sélection récursive.
+    if (u == -1) break;
+
+    sptSet[u] = true; // Marquer comme traité.
+    recursiveUpdate(graph->tab_neighbours[u].head, u, dist, pred, sptSet); // Mise à jour récursive.
+    count++;
+}
+```
+
+### Comparaison récursivité vs boucle
+
+|                | Non récursif | Récursif |
+|----------------|--------------|----------|
+| Lisibilité     | Simple       | Plus complexe |
+| Temporelle     | $O(V^2)$     | $O(V^2)$ |
+| Spatiale       | $O(1)$       | $O(V)$ (pile d'appels) |
+| Flexibilité    | Limitée      | Plus modulaire |
+
+### Recommandation
+Bien que l'approche récursive apporte une modularité et une clarté théorique, elle n'est pas optimale en termes de performances pratiques (risques liés à la pile). Une implémentation non récursive est donc préférable pour des graphes de grande taille.
+
+### Conclusion
+Ces approches récursives permettent d'explorer les fondements mathématiques et la structure de Dijkstra, mais elles restent une adaptation académique. En pratique, elles sont utiles pour enseigner les concepts ou pour des cas très spécifiques où la récursivité apporte un avantage en termes de modularité ou de clarté algorithmique.
 
 ## 8. Enfin, en fonction de l’algorithme que vous aurez choisi, ajoutez des informations qui vous semblent pertinentes ou sur des aspects caractéristiques à cet algorithme qui sont précisés dans la description de l’algorithme (voir section 2 ci-dessous).
 
@@ -641,4 +684,69 @@ L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $$O(V^2)$
 
 
 
+## **Sources**
 
+### **1. Cours et documents académiques**
+- Blondel, V. (2014). *Mathématiques discrètes 1 : Théorie et algorithmique des graphes*. Technical report, UCL/EPL. Cours LINMA1691.  
+  Ce document traite des bases théoriques sur les graphes et inclut des analyses détaillées de l'algorithme de Dijkstra, en insistant sur les propriétés mathématiques des graphes orientés pondérés.
+- Szczesniak, I., & Woźna-Szcześniak, B. (n.d.). *Generic Dijkstra: Correctness and Tractability*. Czestochowa University of Technology, Department of Computer Science & Jan Długosz University in Czestochowa, Department of Mathematics and Computer Science. Retrieved from [arXiv](https://arxiv.org/pdf/2204.13547).  
+  Cet article approfondit l'algorithme de Dijkstra, en explorant sa correction formelle et sa tractabilité dans des cas spécifiques.
+- Delhaye, V. (2015). *Le plus court chemin d’imposition des multinationales : application de l’algorithme de Dijkstra*. UCLouvain, Louvain School of Management.  
+  Une application pratique de l'algorithme de Dijkstra dans le domaine économique, en particulier dans le calcul des chemins optimaux pour l'imposition des multinationales.
+
+### **2. Livres de référence**
+- Rivest, R., Stein, C., Cormen, T., & Leiserson, C. (2010). *Algorithmique, 3ème édition*. Dunod.  
+  Livre de référence classique en algorithmique, avec des chapitres détaillés sur les graphes, les structures de données, et l'algorithme de Dijkstra.
+- Cormen, T. H., Leiserson, C. E., Rivest, R. L., & Stein, C. (2009). *Introduction to Algorithms*. MIT Press.  
+   📚 Disponible via [UCLouvain Library](https://ils.bib.uclouvain.be/unamur/documents/1471273).  
+   Les sections sur les graphes et les algorithmes de plus courts chemins sont particulièrement pertinentes pour comprendre la théorie et les implémentations.
+
+### **3. Tutoriels en ligne et implémentations**
+- GeeksforGeeks :  
+   - [Binary Heap](https://www.geeksforgeeks.org/binary-heap/).  
+   - [Heap Data Structure](https://www.geeksforgeeks.org/heap-data-structure/).  
+   - [Dijkstra's Algorithm (Adjacency List)](https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/).  
+   - [Dijkstra's Algorithm Introduction](https://www.geeksforgeeks.org/introduction-to-dijkstras-shortest-path-algorithm/?ref=header_outind).  
+   - [Greedy Algorithms](https://www.geeksforgeeks.org/greedy-algorithms/).  
+   Ces articles expliquent les concepts de base et proposent des implémentations en plusieurs langages, avec un accent sur l’utilisation de listes d’adjacence et de tas binaires.
+- [Binary Heap Implementation](https://d-michail.github.io/assets/teaching/data-structures/033_BinaryHeapImplementation.en.pdf).  
+   Présentation claire de l'implémentation d'un tas binaire, souvent utilisé pour optimiser Dijkstra.
+- [W3Schools](https://www.w3schools.com/dsa/dsa_algo_graphs_dijkstra.php).  
+   Un tutoriel simple et accessible sur les concepts de l'algorithme de Dijkstra.
+- [TechCodeView](https://techcodeview.com/dijkstras-algorithm).  
+   Analyse de l'algorithme, ses variantes et ses cas d'application.
+
+### **4. Cours en ligne et vidéos pédagogiques**
+- Champagne, J. (2023). *Langage C #22 - Graphes*. [YouTube](https://www.youtube.com/watch?v=T5MU8NDMMj4).  
+- Champagne, J. (2024). *Architecture - Graphe*. [YouTube](https://www.youtube.com/watch?v=TwO8rCTFy1c).  
+- Explications de l'algorithme de Dijkstra :  
+   - [Vidéo YouTube 1](https://www.youtube.com/watch?v=85r5OTsl3Fk&list=PLjWBg-aa2xpLsXRPCDSnhutX0BP9Th-DB).  
+   - [Vidéo YouTube 2](https://www.youtube.com/watch?v=YEjUnoca6zs&t=102s).  
+   Ces vidéos offrent une approche visuelle et interactive pour comprendre l’algorithme et ses implémentations.
+
+### **5. Articles et ressources académiques sur Dijkstra**
+- [Parreaux, J.](https://perso.eleves.ens-rennes.fr/people/Julie.Parreaux/fichiers_agreg/info_dev/Dijkstra.pdf).  
+   Une analyse détaillée de l'algorithme de Dijkstra dans le cadre des cours d'informatique à l'ENS Rennes.
+- ENS Rennes. *Complexité - Cours 4*. [Source](https://lacl.u-pec.fr/dima/complexite/cours4.pdf).  
+   Introduction aux notions de complexité, avec une section spécifique sur les algorithmes de graphes.
+- [Cours PCSI - Chapitre 22](https://pcsi1-saint-louis.ovh/site/images/Doc2223/ch22_Dijkstra.pdf).  
+   Un cours synthétique et accessible sur l’algorithme de Dijkstra.
+- Frin, D. *Cours sur l'algorithme de Dijkstra*. [Lien](http://dominique.frin.free.fr/terminales/exosTES-Dijkstra-cor.pdf).  
+   Ce cours propose des exercices corrigés pour illustrer les concepts clés.
+
+### **6. Wikipédia et ressources généralistes**
+- [Algorithme de Dijkstra](https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra).  
+- [Liste d'adjacence](https://fr.wikipedia.org/wiki/Liste_d%27adjacence).  
+- [Matrice d'adjacence](https://fr.wikipedia.org/wiki/Matrice_d%27adjacence).  
+- [Symboles mathématiques](https://fr.wikipedia.org/wiki/Table_des_symboles_litt%C3%A9raux_en_math%C3%A9matiques).  
+- [Piliapp Math Symbols](https://fr.piliapp.com/symbol/math/).  
+   Ces ressources généralistes fournissent une vue d’ensemble sur les concepts et symboles nécessaires.
+
+### **7. Bibliothèques et outils**
+- [Graphviz Documentation](https://graphviz.org/docs/library/).  
+   Documentation officielle pour représenter graphiquement des graphes, souvent utilisée pour visualiser les résultats de Dijkstra.
+
+### **8. Plateformes académiques et bibliothèques**
+- [UCLouvain Library](https://ils.bib.uclouvain.be/unamur).  
+- [UNamur - Bibliothèque BUMP](https://www.unamur.be/fr/bump/bookalibrarian).  
+   Accès à des ressources académiques pour approfondir les algorithmes et structures de données.
