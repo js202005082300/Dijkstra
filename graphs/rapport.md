@@ -1,42 +1,13 @@
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]},
-    messageStyle: "none"
-  });
-</script>
+https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/
+
 Jacquet Samuel  
 UNamur  
 IHDCB232 : Algorithmique 1  
-Travail individuel  
-[Dépôt sur GitHub - Dijkstra](https://github.com/js202005082300/Dijkstra/tree/main)
+Travail individuel
 
 Année académique 2024-2025
 
-# Table des matières
-
-1. [Introduction](#introduction)
-2. [Compréhension de l'algorithme de Dijkstra](#compréhension-de-lalgorithme-de-dijkstra)
-   - 2.1 [Recherche et compréhension](#recherche-et-compréhension)
-   - 2.2 [Choix de l'algorithme](#choix-de-lalgorithme)
-   - 2.3 [Contexte d'utilisation](#contexte-dutilisation)
-3. [Spécification](#spécification)
-   - 3.1 [Préconditions](#préconditions)
-   - 3.2 [Postconditions](#postconditions)
-4. [Implémentation en C](#implémentation-en-c)
-   - 4.1 [Structures de données](#structures-de-données)
-   - 4.2 [Exemple d'exécution](#exemple-dexécution)
-5. [Invariant de boucle](#invariant-de-boucle)
-6. [Analyse de la complexité](#analyse-de-la-complexité)
-   - 6.1 [Complexité temporelle](#complexité-temporelle)
-   - 6.2 [Complexité spatiale](#complexité-spatiale)
-7. [Version récursive](#version-récursive)
-   - 7.1 [Hypothèse d'induction](#hypothèse-dinduction)
-8. [Aspects pertinents supplémentaires](#aspects-pertinents-supplémentaires)
-9. [Conclusion](#conclusion)
-10. [Sources](#sources)
-
-# Introduction
+# Algorithme de Dijkstra
 
 A.1 Algorithme de Dijkstra : L'algorithme de Dijkstra est utile pour trouver le chemin le moins coûteux entre deux nœuds d’un graphe pondéré. Il nécessite l'utilisation d'une structure de données efficace comme une file de priorité (souvent implémentée avec un tas). Il est important de prouver que les nœuds déjà visités ont leur plus court chemin correctement calculé.
 
@@ -47,6 +18,14 @@ A.1 Algorithme de Dijkstra : L'algorithme de Dijkstra est utile pour trouver le 
 ## Recherche et compréhension
 
 L'algorithme de Dijkstra est un algorithme de recherche de chemin le plus court dans un graphe pondéré. Il a été développé par Edsger W. Dijkstra en 1956 et est largement utilisé en informatique et en mathématiques pour résoudre des problèmes de plus court chemin à partir d'un sommet source vers tous les autres sommets d'un graphe.
+
+## Sources
+
+Voir en fin de rapport.
+
+- Introduction to Algorithms, Cormen et al.
+- GeeksforGeeks: Greedy Algorithms
+- Wikipedia: Dijkstra's Algorithm
 
 ## Choix de l'algorithme
 
@@ -408,7 +387,8 @@ On pose $\Gamma^+(u)$ comme l'ensemble des voisins directs (successeurs) du somm
 
 ### Exemple
 
-![Diagramme Graphviz](C:/MesProjets/UNamur/Algorithmque1/Dijkstra/graphs/digraph.png)
+% ![Diagramme Graphviz](/graphs/digraph.png)
+![Diagramme Graphviz](/digraph.png)
 
 Exemple de grapge :  
 - Un graphe orienté $G = (V, E)$ avec $V = \{a, b, c, d, e\}$.
@@ -509,9 +489,9 @@ $c \leftarrow a$
 $d \leftarrow b \leftarrow c \leftarrow a$  
 $e \leftarrow c \leftarrow a$  
 
-## Invariant de boucle pertinent pour l'algorithme de Dijkstra
+## 5. Invariant de boucle pertinent pour l'algorithme de Dijkstra
 
-> 5. Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
+> Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
 
 ### Elicitation de l'invariant
 
@@ -594,9 +574,7 @@ $$O(V + E).$$
 L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $$O(V^2)$$ car chaque sommet doit être recherché, prenant $$O(V)$$ temps. En utilisant une structure de données Min-Heap ou Fibonacci-Heap, la recherche est réduite à $$O(\log V)$$, améliorant la complexité à $$O(V \cdot \log V + E)$$, où $$E$$ est le nombre d'arêtes. Cette amélioration est bénéfique pour les graphes grands et clairsemés. Pour les graphes denses, l'implémentation avec Fibonacci-Heap est plus efficace.
 
 
-## Version récursive de l'algorithme et hypothèse d'induction
-
-> 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.
+## 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.
 
 Partie choisie : Sélection et mise à jour des distances des voisins
 Une partie clé pour intégrer la récursivité dans l'algorithme de Dijkstra est la sélection du sommet ayant la plus petite distance et la mise à jour des distances des voisins. Nous explorons ici deux approches :
@@ -692,9 +670,7 @@ Bien que l'approche récursive apporte une modularité et une clarté théorique
 ### Conclusion
 Ces approches récursives permettent d'explorer les fondements mathématiques et la structure de Dijkstra, mais elles restent une adaptation académique. En pratique, elles sont utiles pour enseigner les concepts ou pour des cas très spécifiques où la récursivité apporte un avantage en termes de modularité ou de clarté algorithmique.
 
-## Informations pertinentes et caractéristiques de l'algorithme choisi
-
-> 8. Enfin, en fonction de l’algorithme que vous aurez choisi, ajoutez des informations qui vous semblent pertinentes ou sur des aspects caractéristiques à cet algorithme qui sont précisés dans la description de l’algorithme.
+## 8. Enfin, en fonction de l’algorithme que vous aurez choisi, ajoutez des informations qui vous semblent pertinentes ou sur des aspects caractéristiques à cet algorithme qui sont précisés dans la description de l’algorithme.
 
 L’algorithme de Dijkstra résout efficacement des problèmes de chemin le plus court dans des graphes pondérés.
 

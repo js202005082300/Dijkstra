@@ -1,5 +1,7 @@
 # Dijkstra
 
+> Source : [Algorithme de Dijkstra: l'exécution (Partie 1)](https://www.youtube.com/watch?v=85r5OTsl3Fk&list=PLjWBg-aa2xpLsXRPCDSnhutX0BP9Th-DB)
+
 # L'exécution de Dijkstra
 
 ## Spécifiez le problème
@@ -328,5 +330,3 @@ Tant qu'il existe un sommet hors de P
            prédécesseur[b] := a
     Fin Pour
 Fin Tant Que
-
-source : https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra

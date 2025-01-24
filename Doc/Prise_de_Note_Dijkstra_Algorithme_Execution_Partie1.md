@@ -1,8 +1,9 @@
-#Algo de DIJKSTRA
+# Algo de DIJKSTRA
+
+> Source : [2 DIJKSTRA algorithme et preuve](https://www.youtube.com/watch?v=AtFtWhfnCsM)
 
 Cours d'informatique : Algorithme de Dijkstra (2/4).
 Auteure : Katia BARRE, professeure en CPGE au lycée Lesage (Vannes)
-Source : [2 DIJKSTRA algorithme et preuve](https://www.youtube.com/watch?v=AtFtWhfnCsM)
 
 ## Notation
 Graphe = (sommets, arcs)

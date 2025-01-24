@@ -1,94 +1,32 @@
-# Algo de Dijkstra
+# Algorithme de Dijkstra
 
-Calcul les plus courts chemins dans un graphe.
+Calcul des plus courts chemins dans un graphe pondéré avec des poids non négatifs.
 
-Publié en 1959 par l'informaticien Edsger Dijkstra.
+### Auteur et contexte académique
 
-<!-- !!! une file de priorité (souvent implémentée avec un tas). -->
-```C
-#include <stdio.h>
-#include <limits.h>
-#include <stdbool.h>
+- **Jacquet Samuel**  
+- **Université de Namur**  
+- **IHDCB232 : Algorithmique 1**  
+- **Travail individuel**  
+- **Année académique** : 2024-2025  
 
-#define V 9 // Nombre de sommets dans le graphe
+[**Dépôt sur GitHub - Dijkstra**](https://github.com/js202005082300/Dijkstra/tree/main)
 
-// Fonction principale
-void Dijkstra(int G[V][V], int Poids[V][V], int sdeb) {
-    int d[V];
-    int predecesseur[V];
-    bool sptSet[V];
-    // Initialisation
-    for(int i=0; i<V; i++)
-        d[i] = INT_MAX, sptSet[i] = false;
-    d[sdeb] = 0;
-    int Q[V];
-    for (int i = 0; i < V; i++)
-        Q[i] = 1;
-    //
+---
 
-    while (true) {
-        int mini = INT_MAX;
-        int s1 = -1;
-        for(int v = 0; v < V; v++)
-            if(Q[v] && d[v] < mini) {
-                mini = d[v];
-                s1 = v;
-            }
-        if (s1 == -1) break;
-        Q[s1] = 0;
-        sptSet[s1] = true;
+## Problème de plus court chemin (PCC)
 
-        for (int s2 = 0; s2 < V; s2++) {
-            if (G[s1][s2] && !sptSet[s2])
-                // Mise à jour des distances
-                if(d[s2]>d[s1]+Poids[s1][s2]) {
-                    d[s2]=d[s1]+Poids[s1][s2];
-                    predecesseur[s2]=s1;
-                }
-                //
-        }
-    }
+L'algorithme de Dijkstra, publié en 1959 par l'informaticien Edsger W. Dijkstra, permet de résoudre efficacement le problème des plus courts chemins dans un graphe pondéré. 
 
-    printf("Le plus court chemin du sommet %d à tous les autres sommets:\n", sdeb);
-    for (int i = 0; i < V; i++)
-        printf("%d -> %d \t Distance: %d\n", sdeb, i, d[i]);
-}
-
-int main() {
-    // Représenter les résultats dans un tableau.
-    int G[V][V] = {{0, 4, 0, 0, 0, 0, 0, 8, 0},
-                   {4, 0, 8, 0, 0, 0, 0, 11, 0},
-                   {0, 8, 0, 7, 0, 4, 0, 0, 2},
-                   {0, 0, 7, 0, 9, 14, 0, 0, 0},
-                   {0, 0, 0, 9, 0, 10, 0, 0, 0},
-                   {0, 0, 4, 14, 10, 0, 2, 0, 0},
-                   {0, 0, 0, 0, 0, 2, 0, 1, 6},
-                   {8, 11, 0, 0, 0, 0, 1, 0, 7},
-                   {0, 0, 2, 0, 0, 0, 6, 7, 0}};
-    
-    Dijkstra(G, G, 0);
-
-    return 0;
-}
-```
-
-# Problème de plus court chemin (pcc)
-
-## Test symboles mathématique en .md
-
-$a+b=c$
-
-$$
-f(x) = \int_{-\infty}^\infty \hat f(\xi)\,e^{2 \pi \xi x} \,d\xi
-$$
+---
 
 ## Bibliothèques nécessaires
 
 ### Graphviz
-- **Version** : `Graphviz-12.2.1-win64`
+- **Version requise** : `Graphviz-12.2.1-win64`
 - **Téléchargement** : [Graphviz Downloads](https://graphviz.org/)
-- **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
+- **Configuration** : Ajoutez les fichiers dynamiques dans le dossier `bin`.
 
-### SDL
-- **Téléchargement** : [SDL Downloads](https://www.libsdl.org/download-2.0.php)
-- **Fichiers dynamiques** : Ajoutez les fichiers dans le dossier `bin`
+---
+
+Ce fichier accompagne une implémentation en C de l'algorithme de Dijkstra et peut être exécuté dans un environnement compatible. Pour plus de détails, consultez les fichiers du dépôt ou le rapport associé.
