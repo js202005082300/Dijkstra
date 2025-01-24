@@ -5,13 +5,14 @@
     messageStyle: "none"
   });
 </script>
-Jacquet Samuel  
-UNamur  
-IHDCB232 : Algorithmique 1  
-Travail individuel  
-[Dépôt sur GitHub - Dijkstra](https://github.com/js202005082300/Dijkstra/tree/main)
+# Travail individuel
 
-Année académique 2024-2025
+**Jacquet Samuel**  
+**Université de Namur (UNamur)**  
+**IHDCB232 : Algorithmique 1**  
+**Année académique 2024-2025**
+
+[Dépôt GitHub du projet : Implémentation de l'algorithme de Dijkstra](https://github.com/js202005082300/Dijkstra/tree/main)
 
 # Table des matières
 
@@ -21,20 +22,24 @@ Année académique 2024-2025
    - 2.2 [Choix de l'algorithme](#choix-de-lalgorithme)
    - 2.3 [Contexte d'utilisation](#contexte-dutilisation)
 3. [Spécification](#spécification)
-   - 3.1 [Préconditions](#préconditions)
-   - 3.2 [Postconditions](#postconditions)
+   - 3.1 [Précondition](#précondition)
+   - 3.2 [Postcondition](#postcondition)
 4. [Implémentation en C](#implémentation-en-c)
    - 4.1 [Structures de données](#structures-de-données)
    - 4.2 [Exemple d'exécution](#exemple-dexécution)
-5. [Invariant de boucle](#invariant-de-boucle)
-6. [Analyse de la complexité](#analyse-de-la-complexité)
-   - 6.1 [Complexité temporelle](#complexité-temporelle)
-   - 6.2 [Complexité spatiale](#complexité-spatiale)
-7. [Version récursive](#version-récursive)
-   - 7.1 [Hypothèse d'induction](#hypothèse-dinduction)
-8. [Aspects pertinents supplémentaires](#aspects-pertinents-supplémentaires)
-9. [Conclusion](#conclusion)
-10. [Sources](#sources)
+5. [Explication intuitive et justification](#explication-intuitive-et-justification)
+6. [Invariant de boucle](#invariant-de-boucle-pertinent)
+   - 6.1 [Élicitation de l'invariant](#élicitation-de-linvariant)
+   - 6.2 [Rôle de l'invariant](#rôle-de-linvariant)
+   - 6.3 [Preuve de l'invariant](#preuve-de-linvariant)
+7. [Adaptation avec les triples de Hoare](#adaptation-avec-les-triples-de-hoare)
+8. [Analyse de la complexité](#analyse-de-la-complexité)
+   - 8.1 [Complexité temporelle](#complexité-temporelle)
+   - 8.2 [Complexité spatiale](#complexité-spatiale)
+9. [Version récursive et hypothèse d'induction](#version-récursive-et-hypothèse-dinduction)
+10. [Informations pertinentes supplémentaires](#informations-pertinentes-supplémentaires)
+11. [Conclusion](#conclusion)
+12. [Sources](#sources)
 
 # Introduction
 
@@ -50,9 +55,10 @@ L'algorithme de Dijkstra est un algorithme de recherche de chemin le plus court 
 
 ## Choix de l'algorithme
 
-L'algorithme de Dijkstra est très efficace pour trouver le chemin le plus court dans des graphes pondérés avec des poids non négatifs. Il ne fonctionne pas avec des poids négatifs mais est plus éfficace que Dijkstra en termes de compléxité temporelle, avec une complexité de (O(VE)) contre (O(V^2)) pour Dijkstra (ou (O(E + V \log V)) avec une file de priorité)
+L'algorithme de Dijkstra est très efficace pour trouver le chemin le plus court dans des graphes pondérés avec des poids non négatifs. Il ne fonctionne pas avec des poids négatifs mais est plus efficace que Dijkstra en termes de complexité temporelle, avec une complexité de $O(VE)$ contre $O(V^2)$ pour Dijkstra (ou $O(E + V \log V)$ avec une file de priorité).
 
 L'algorithme est relativement simple à comprendre et à implémenter. Il n'utilise pas d'heuristique pour guider la recherche comme pour le A*. La performance ne dépend pas de l'heuristique utilisée.
+
 Il est utilisé dans de nombreux domaines, ce qui en fait un outil polyvalent.
 
 ## Contexte d'utilisation
@@ -69,7 +75,7 @@ En bref, l'algorithme de Dijkstra est un outil puissant et polyvalent pour réso
 
 > 2. Spécifiez le problème : explicitez les préconditions et postconditions formellement (en respectant les notations mathématiques vues au cours).
 
-## environnement
+## Environnement
 ```c
 int V, E, src;
 Graph* graph; // Représentation du graphe sous forme de liste d'adjacence
@@ -77,27 +83,20 @@ int dist[V]; // Tableau des distances
 int pred[V]; // Tableau des prédécesseurs
 ```
 
-Soit ( G = (V, E) ) un graphe où ( V ) est l'ensemble des sommets ((|V| = V₀)) et ( E \subseteq V \times V ) l'ensemble des arêtes pondérées par une fonction ( w : E \to \mathbb{R}^+ ).
+Soit $G = (V, E)$ un graphe où $V$ est l'ensemble des sommets ($|V| = V_0$) et $E \subseteq V \times V$ l'ensemble des arêtes pondérées par une fonction $w : E \to \mathbb{R}^+$.
 
-## Précondition (P)
-
-<br>
-<br>
-<br>
-<br>
-<br>
+## Précondition
 
 $$
 \text{pré} \equiv 
-\begin{aligned}
-    & \text{Graph } G = (V, E) \text{ représenté par une liste d’adjacence, avec } V = V_0 > 0, E = E_0 \geq 0, \\
-    & \text{src} \in V, \quad \forall (u, v) \in E : w(u, v) \geq 0, \\
-    & \text{dist}[\text{src}] = 0, \quad \forall v \neq \text{src}, \text{dist}[v] = +\infty, \\
-    & \text{sptSet}[v] = \text{false}, \quad \forall v \in V, \\
+\begin{cases}
+    & \text{Graph } G = (V, E) \text{ représenté par une liste d’adjacence, avec } V = V_0 > 0, E = E_0 \geq 0, \newline
+    & \text{src} \in V, \quad \forall (u, v) \in E : w(u, v) \geq 0, \newline
+    & \text{dist}[\text{src}] = 0, \quad \forall v \neq \text{src}, \text{dist}[v] = +\infty, \newline
+    & \text{sptSet}[v] = \text{false}, \quad \forall v \in V, \newline
     & \text{Adj}[u] \text{ est une liste d’adjacence valide pour chaque } u \in V.
-\end{aligned}
+\end{cases}
 $$
-
 
 - $V_0$ : Nombre de sommets dans le graphe ($V_0 > 0$).
 - $E_0$ : Nombre d’arêtes ($E_0 \geq 0$).
@@ -111,12 +110,10 @@ Cette formulation se base uniquement sur les arêtes existantes dans $E_0$, ce q
 
 
 > **Remarque** : Je choisis la liste d'adjacence car la matrice d'adjacence :
-$$ V₀ > 0 \land \forall i,j : 0 \leq i,j < V₀ : \text{graph}[i][j] \geq 0$$
-
-> nécessite $O(V₀^2)$ d’espace. Cela est dû au fait que `graph[i][j]` représente le poids de l’arête entre `i` et `j`, ou ∞ si l’arête est absente, ce qui permet un accès direct mais utilise beaucoup d'espace. En revanche, la liste d'adjacence :
+$$V₀ > 0 \land \forall i,j : 0 \leq i,j < V₀ : \text{graph}[i][j] \geq 0$$
+nécessite $O(V₀^2)$ d’espace. Cela est dû au fait que `graph[i][j]` représente le poids de l’arête entre `i` et `j`, ou ∞ si l’arête est absente, ce qui permet un accès direct mais utilise beaucoup d'espace. En revanche, la liste d'adjacence :
 $$V₀ > 0 \land \forall (u,v) \in E₀ : w(u,v) \geq 0$$
-
-> utilise $O(V₀ + |E₀|)$ d’espace, ce qui est optimal pour les graphes creux (sparse) car seules les arêtes existantes sont stockées.
+utilise $O(V₀ + |E₀|)$ d’espace, ce qui est optimal pour les graphes creux (sparse) car seules les arêtes existantes sont stockées.
 
 ## Orientation du graphe
 
@@ -124,9 +121,7 @@ Dans mon implémentation, je travaille avec des graphes orientés ou non orient�
 
 ### Graphe orienté
 
-Un graphe orienté est défini comme suit :
-
-$$G = (V, E)$$
+Un graphe orienté est défini comme suit : $G = (V, E)$
 
 où :
 - $V$ est l'ensemble des sommets.
@@ -136,9 +131,7 @@ Pour un graphe orienté, une arête $(v_1, v_2) \in E$ n'implique pas nécessair
 
 ### Graphe non orienté
 
-Un graphe non orienté est défini comme suit :
-
-$$G = (V, E)$$
+Un graphe non orienté est défini comme suit : $G = (V, E)$
 
 où :
 - $V$ est l'ensemble des sommets.
@@ -171,44 +164,44 @@ void add_edge(Graph *g, int src, int dest, int weight) {
 }
 ```
 
-Cette distinction permet de gérer les graphes orientés et non orientés de manière flexible et efficace.
+Cette distinction permet de gérer les graphes orientés et non orientés de manière flexible.
 
-## Postcondition (Q)
-
-<br>
+## Postcondition
 
 $$
 \text{Q} \equiv \forall v \in V : \begin{cases} 
-\varphi[v] = \min \left( \sum_{k=0}^{|P|-2} w(u_k, u_{k+1}) \right), & \text{si un chemin } P \text{ existe de } src \text{ à } v, \\
+\varphi[v] = \min \left( \sum_{k=0}^{|P|-2} w(u_k, u_{k+1}) \right), & \text{si un chemin } P \text{ existe de } src \text{ à } v, \newline
 \varphi[v] = +\infty, & \text{si aucun chemin n’existe}.
 \end{cases}
 $$
 
 Pour chaque sommet $v$ :
-- Si un chemin $P$ existe de $\text{src}$ à $v$, alors la distance minimale $\phi[v]$ correspond à la somme des poids des arêtes d’un chemin $\text{P}$ optimal de src à v.
+- Si un chemin $P$ existe de $\text{src}$ à $v$, alors la distance minimale $\varphi[v]$ correspond à la somme des poids des arêtes d’un chemin $\text{P}$ optimal de $\text{src}$ à $v$.
 
-> $$
-\text{Indices de la somme : } k=0 \text{ à } \left| P \right| - 2 \text{ parcourt les } \left| P \right| - 1 \text{ sommets du chemin } P = (u_0, u_1, \ldots, u_{\left| P \right| - 1}). \text{ Chaque arête du chemin } P \text{ est représentée par } w(u_k, u_{k+1}), \text{ où } k \text{ est l’indice du sommet source de l’arête.}
+> Les indices de la somme sont expliqués comme suit :
 $$
+\begin{aligned}
+    & \text{Indices de la somme : } k=0 \text{ à } \left| P \right| - 2 \text{ parcourt les } \left| P \right| - 1 \text{ sommets du chemin } P = (u_0, u_1, \ldots, u_{\left| P \right| - 1}). \newline
+    & \text{Chaque arête du chemin } P \text{ est représentée par } w(u_k, u_{k+1}), \text{ où } k \text{ est l’indice du sommet source de l’arête.}
+\end{aligned}
+$$
+
 
 - Si aucun chemin $\text{P}$ n'existe, alors $\varphi[v] = +\infty$.
 
-### Formulation pour une matrice d’adjacence
+### Interprétation avec une matrice d’adjacence
 
-Si le graphe est représenté par une matrice d’adjacence, la postcondition devient :
-
-<br>
-
-$$
-Q \equiv \forall v \in V : \left\{ \phi[v] = \min \left( \sum_{k=0}^{\left| P \right| - 2} \text{graph}[u_k][u_{k+1}] \right), \text{ si un chemin } P \text{ existe de src à } v, \phi[v] = +\infty, \text{ si aucun chemin n’existe.} \right\}
-$$
+La postcondition reste identique quel que soit le mode de représentation du graphe (liste d’adjacence ou matrice d’adjacence). Cependant, dans le cas d’une matrice d’adjacence, les poids des arêtes sont extraits directement depuis la matrice `\text{graph}[i][j]`. Voici un exemple :
 
 #### Exemple :
+
+Si le graphe est représenté par la matrice suivante :
+
 $$
 \text{graph} = \begin{bmatrix}
-0 & 2 & +\infty & 4 \\
-+\infty & 0 & 1 & +\infty \\
-+\infty & +\infty & 0 & 3 \\
+0 & 2 & +\infty & 4 \newline
++\infty & 0 & 1 & +\infty \newline
++\infty & +\infty & 0 & 3 \newline
 +\infty & +\infty & +\infty & 0
 \end{bmatrix}
 $$
@@ -235,10 +228,9 @@ if (!sptSet[v] && dist[u] != INT_MAX) {
 ```
 Les sommets inatteignables conservent leur valeur $∞$, et $pred[v]$ est mis à jour uniquement si une distance minimale est trouvée.
 
-
 # Implémentation
 
-> Implémentez l'algorithme en C. Vous êtes autorisés à vous aider des ressources que vous trouvez, mais l’implémentation doit être votre propre travail : vous devez vous l’approprier et en maîtriser tous les détails. Dans le rapport, vous donnerez le code (commenté) de votre implémentation, vous détaillerez les structures de données utilisées et expliquer pourquoi elles sont adaptées à l'algorithme choisi.
+> 3. Implémentez l'algorithme en C. Vous êtes autorisés à vous aider des ressources que vous trouvez, mais l’implémentation doit être votre propre travail : vous devez vous l’approprier et en maîtriser tous les détails. Dans le rapport, vous donnerez le code (commenté) de votre implémentation, vous détaillerez les structures de données utilisées et expliquer pourquoi elles sont adaptées à l'algorithme choisi.
 
 ```c
 #include "dijkstra.h"
@@ -324,7 +316,7 @@ int min(int a, int b) {
 - $\text{sptSet}$ : Ensemble des sommets traités (Shortest Path Tree Set).
 - $\text{NodeList}$ : Liste des voisins d'un sommet.
 
-### Exemple 1 :
+## Exemple 1 :
 Considérons le graphe suivant :
 
 ```
@@ -350,7 +342,7 @@ $\text{dist}[1] = 1$
 $\text{dist}[2] = 2$  
 $\text{dist}[3] = 4$  
 
-### Exemple 2 :
+## Exemple 2 :
 
 Considérons un autre graphe :
 
@@ -377,17 +369,19 @@ $\text{dist}[1] = 1$
 $\text{dist}[2] = 3$  
 $\text{dist}[3] = 4$  
 
-## 4. En vos propres mots, expliquez comment fonctionne l'algorithme. Décrivez de manière intuitive pourquoi l’implémentation produit un résultat correct par rapport à vos spécifications.
+# Explication intuitive de l'algorithme et justification de sa correction.
+
+> 4. En vos propres mots, expliquez comment fonctionne l'algorithme. Décrivez de manière intuitive pourquoi l’implémentation produit un résultat correct par rapport à vos spécifications.
 
 L'algorithme de Dijkstra permet de trouver les plus courts chemins depuis un sommet source $\text{src}$ vers tous les autres sommets d'un graphe $G = (V, E)$, à condition que les poids des arêtes soient non négatifs ($w(u, v) \geq 0 \, \forall (u, v) \in E$).
 
-### Description
+## Description
 
-On pose $\phi[v]$ comme la distance estimée actuelle du sommet $v$ depuis la source, équivalente à dist[v] dans le code.  
-On pose $\rho[v]$ comme le prédécesseur de $v$ sur le chemin minimal, équivalent à pred[v] dans le code.  
-On pose $\text{sptSet}[v]$ comme un indicateur booléen indiquant si $v$ a été traité, équivalent à sptSet[v] dans le code.  
+On pose $\phi[v]$ comme la distance estimée actuelle du sommet $v$ depuis la source, équivalente à `dist[v]` dans le code.  
+On pose $\rho[v]$ comme le prédécesseur de $v$ sur le chemin minimal, équivalent à `pred[v]` dans le code.  
+On pose $\text{sptSet}[v]$ comme un indicateur booléen indiquant si $v$ a été traité, équivalent à `sptSet[v]` dans le code.  
 Lorsque $\text{sptSet}[v] = \text{true}$, cela signifie que le plus court chemin vers $v$ a été trouvé.  
-On pose $\Gamma^+(u)$ comme l'ensemble des voisins directs (successeurs) du sommet $u$, équivalent à graph->tab_neighbours[u] dans le code.  
+On pose $\Gamma^+(u)$ comme l'ensemble des voisins directs (successeurs) du sommet $u$, équivalent à `graph->tab_neighbours[u]` dans le code.  
 
 + Initialisation :
     - $\phi[v] = +\infty$ pour tous les sommets sauf $\text{src}$, où $\phi[\text{src}] = 0$.
@@ -406,9 +400,26 @@ On pose $\Gamma^+(u)$ comme l'ensemble des voisins directs (successeurs) du somm
     - $\phi[v]$ contient la distance minimale depuis $\text{src}$ jusqu'à $v$.
     - $\rho[v]$ permet de reconstruire les chemins minimaux.
 
-### Exemple
+## Exemple
 
 ![Diagramme Graphviz](C:/MesProjets/UNamur/Algorithmque1/Dijkstra/graphs/digraph.png)
+
+```graphviz
+<!-- Représentation Graphviz -->
+digraph my_graph {
+	rankdir=LR;
+	a -> b [label="10"];
+	b -> c [label="2"];
+	c -> d [label="9"];
+	d -> e [label="4"];
+	a -> c [label="5"];
+	b -> d [label="1"];
+	c -> b [label="3"];
+	c -> e [label="2"];
+	e -> b [label="2"];
+	e -> d [label="6"];
+}
+```
 
 Exemple de grapge :  
 - Un graphe orienté $G = (V, E)$ avec $V = \{a, b, c, d, e\}$.
@@ -431,12 +442,12 @@ Avant la première itération :
 <tr><td>-</td><td>{a, b, c, d, e}</td><td>-</td><td>0, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td><td>+∞, ?</td></tr>
 </table>
 
-Sélectionner $u$ avec la plus petite $\phi[u]$ dans $Q$.
-Retirer $u$ de $Q$ et le marquer comme traité.
-Mettre à jour $\phi[v]$ pour chaque voisin $v$ de $u$.
-Si mise à jour, définir $\rho[v] = u$.
+Sélectionner $u$ avec la plus petite $\phi[u]$ dans $Q$.  
+Retirer $u$ de $Q$ et le marquer comme traité.  
+Mettre à jour $\phi[v]$ pour chaque voisin $v$ de $u$.  
+Si mise à jour, définir $\rho[v] = u$.  
 
-2. Première itération ($u = a$)  
+2. Première itération $u = a$
 + Sélection de $u = a$ car $\phi[a] = 0$.  
 + Exploration des voisins : $\Gamma^+(a) = {b, c}$.  
   - Mise à jour pour $b$ : $\phi[b] = 0 + 10 = 10, \rho[b] = a$.  
@@ -446,7 +457,7 @@ Si mise à jour, définir $\rho[v] = u$.
 
 3. Deuxième itération $u = c$
 
-Sélection de $u = c$ car $\phi[c] = 5$.  
++ Sélection de $u = c$ car $\phi[c] = 5$.  
 + Exploration des voisins : $\Gamma^+(c) = \{b, d, e\}$.  
 + Mise à jour pour $b$ : $\phi[b] = \min(10, 5 + 3) = 8, \rho[b] = c$.  
   - Mise à jour pour $d$ : $\phi[d] = 5 + 9 = 14, \rho[d] = c$.  
@@ -509,57 +520,110 @@ $c \leftarrow a$
 $d \leftarrow b \leftarrow c \leftarrow a$  
 $e \leftarrow c \leftarrow a$  
 
-## Invariant de boucle pertinent pour l'algorithme de Dijkstra
+<br>
+
+# Invariant de boucle pertinent
 
 > 5. Identifiez un invariant de boucle pertinent pour l'algorithme. Formulez cet invariant et démontrez, de manière formelle, qu'il est vérifié à chaque itération de la boucle concernée. Expliquez en quoi il permettrait, dans une preuve de programme plus complète, de faire le pont entre pré- et post- conditions.
 
-### Elicitation de l'invariant
+## Elicitation de l'invariant
 
-L'invariant proposé est :
+L'invariant de boucle pour l'algorithme de Dijkstra peut être formellement défini comme suit :
 
 <br>
 
 $$
 I \equiv \forall v \in V : \begin{cases} 
-\varphi[v] = \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}), & \text{si } v \in sptSet, \\
-\varphi[v] \geq \min \left( \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}) \right), & \text{si } v \notin sptSet, \\
+\varphi[v] = \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}), & \text{si } v \in sptSet, \newline
+\varphi[v] \geq \min \left( \sum_{k=0}^{|P|-1} w(u_k, u_{k+1}) \right), & \text{si } v \notin sptSet, \newline
 \varphi[v] = +\infty, & \text{si } v \text{ est inaccessible}.
 \end{cases}
 $$
 
-Dans cet invariant, $\varphi[v]$ représente la distance estimée actuelle du sommet $v$ depuis la source $src$ dans l'algorithme de Dijkstra. $P$ est un chemin spécifique reliant la source $src$ au sommet $v$, composé de sommets $u_0, u_1, \ldots, u_k, \ldots, u_{|P|-1}$. La longueur de ce chemin est $|P|-1$, c'est-à-dire le nombre d'arêtes dans $P$. L'indice $k$ représente les arêtes dans le chemin $P$, chaque arête étant notée $w(u_k, u_{k+1})$. L'ensemble $sptSet$ contient les sommets déjà traités, inclus dans l'arbre des plus courts chemins.
++ Dans cet invariant, $\phi[v]$ représente la distance estimée actuelle du sommet $v$ depuis la source $\text{src}$ dans l'algorithme de Dijkstra.  
++ $\text{sptSet}$ est l'ensemble des sommets pour lesquels le chemin le plus court a été confirmé.  
++ $P$ est un chemin spécifique reliant la source  $\text{src}$ au sommet $v$, composé de sommets $u_0, u_1, \ldots, u_k, \ldots, u_{|P|-1}$. La longueur de ce chemin est $|P|-1$, c'est-à-dire le nombre d'arêtes dans $P$. L'indice $k$ représente les arêtes dans le chemin $P$, chaque arête étant notée $w(u_k, u_{k+1})$.  
++ $w(u_k, u_{k+1})$ est le poids de l'arête entre deux sommets consécutifs $u_k$ et $u_{k+1}$.  
++ L'ensemble $sptSet$ contient les sommets déjà traités, inclus dans l'arbre des plus courts chemins.  
 
-### Méthodologie structurée de la boucle
+## Rôle de l'invariant
 
-L'algorithme de Dijkstra suit cette structure :
++ Cet invariant assure que les sommets dans $\text{sptSet}$ ont une distance $\phi[v]$ qui correspond exactement au plus court chemin depuis $\text{src}$.  
++ Les sommets accessibles mais non encore traités ($v \notin \text{sptSet}$) ont des estimations $\phi[v]$ qui sont soit correctes, soit supérieures à la distance minimale réelle.  
++ Les sommets inaccessibles ont toujours $\phi[v] = +\infty$.  
++ L'invariant garantit que l'algorithme maintient des distances cohérentes tout au long de son exécution et converge correctement vers les solutions.  
 
-```plaintext
-{R} // Précondition de la boucle
-INIT;
-{I} // Invariant vrai avant de rentrer dans la boucle
-while (B) {
-  ITER;
-  {I} // Invariant préservé à la fin du tour de boucle
-}
-{I et \neg B} // Invariant encore vrai, condition d'arrêt atteinte
-CLOT;
-{T} // Postcondition de la boucle
-```
+## Preuve de l'invariant
 
+1. Initialisation
+Avant d'entrer dans la boucle :
++ $\phi[\text{src}] = 0$, car la distance de la source à elle-même est nulle.
++ $\phi[v] = +\infty$ pour tout $v \neq \text{src}$, ce qui est correct pour les sommets accessibles non encore explorés et les sommets inaccessibles.
++ Aucun sommet n'a encore été traité, donc $\text{sptSet} = \emptyset$.
 
-### Condition d'arrêt ($\neg B$)
+**L'invariant est donc satisfait avant la première itération.**
+
+2. Conservation de l'invariant
+L'invariant doit être préservé à chaque itération de la boucle. Cela est assuré par les étapes suivantes :
++ Sélection du sommet $u$ :
+  - Le sommet $u$ ayant la plus petite valeur de $\phi[u]$ parmi les sommets non encore traités est extrait.
+  - Puisque $u$ est le plus proche sommet accessible de $\text{src}$, son inclusion dans $\text{sptSet}$ garantit que $\phi[u]$ est correct.
++ Mise à jour des voisins :
+  - Pour chaque voisin $v$ de $u$, l'algorithme met à jour $\phi[v]$ comme suit : $\varphi[v] \leftarrow \min(\varphi[v], \varphi[u] + w(u, v))$
+  - Cette mise à jour réduit potentiellement $\phi[v]$ si un chemin plus court passant par $u$ est trouvé.
+  - Les sommets inaccessibles conservent $\phi[v] = +\infty$ car aucune arête ne permet de les atteindre.
+
+**L'invariant est donc préservé à chaque itération.**
+
+3. Condition finale
+Lorsque la boucle se termine, $\text{sptSet}$ contient tous les sommets accessibles depuis $\text{src}$. À ce stade :
++ Les sommets accessibles ont des distances $\phi[v]$ correctes.
++ Les sommets inaccessibles ont $\phi[v] = +\infty$.
+
+**L'invariant est toujours vérifié à la fin de l'algorithme.**
+
+## Adaptation avec les triples de Hoare
+
+L'ajout des sommets inaccessibles dans l'invariant nécessite une petite adaptation des triples de Hoare pour la preuve :
+
+### Initialisation :
+$$
+I_0 \\ 
+\text{Initialiser les distances et } \text{sptSet} \\ 
+I \\ 
+\text{Où } I_0 \text{ inclut le fait que } \phi[v] = +\infty \text{ pour les sommets inaccessibles.}
+$$
+
+### Corps de boucle :
+$$
+I \land \text{Condition de boucle} \\ 
+\text{Mise à jour des distances} \\ 
+I \\ 
+\text{L'invariant est préservé pour tous les sommets, accessibles ou non.}
+$$
+
+### Condition finale : Lorsque $\text{sptSet}$ contient tous les sommets atteignables :
+$$
+I \land \neg \text{Condition de boucle} \\ 
+\text{Sortie de la boucle} \\ 
+\text{Postcondition} \\ 
+\text{La postcondition inclut explicitement } \phi[v] = +\infty \text{ pour les sommets inaccessibles.}
+$$
+
+## Condition d'arrêt ($\neg B$)
 $$
 F = \emptyset,
 $$
 où $F$ est l'ensemble des sommets non encore traités. Lorsque $F$ est vide, l'algorithme s'arrête.
 
+# Analyse de la complexité
 
-## 6. Analysez la complexité temporelle et spatiale « pire des cas » de l'algorithme. Justifiez votre analyse en fonction des différentes étapes de l'algorithme et des structures de données utilisées.
+> 6. Analysez la complexité temporelle et spatiale « pire des cas » de l'algorithme. Justifiez votre analyse en fonction des différentes étapes de l'algorithme et des structures de données utilisées.
 
-#### **Complexité temporelle**  
+## Complexité temporelle
 L’algorithme de Dijkstra sans **Min-Heap** effectue les étapes suivantes :  
 
-1. **Initialisation** :  
+1. **Initialisation** : 
    $$O(V)$$  
 
 2. **Recherche du sommet minimal \( u \)** :  
@@ -573,9 +637,7 @@ L’algorithme de Dijkstra sans **Min-Heap** effectue les étapes suivantes :
 **Complexité temporelle totale** :  
 $$O(V^2 + E) = O(V^2).$$
 
----
-
-#### **Complexité spatiale**  
+## Complexité spatiale
 L'algorithme utilise :  
 1. $\text{dist}[], \text{pred}[], \text{sptSet}[]$ :  
    $$O(V).$$  
@@ -585,16 +647,13 @@ L'algorithme utilise :
 **Complexité spatiale totale** :  
 $$O(V + E).$$  
 
----
-
-**Conclusion :**
-- **Temporelle** : $$O(V^2)$$  
+## Conclusion :
+- **Temporelle** : $$O(V^2)$$
 - **Spatiale** : $$O(V + E)$$.
 
-L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $$O(V^2)$$ car chaque sommet doit être recherché, prenant $$O(V)$$ temps. En utilisant une structure de données Min-Heap ou Fibonacci-Heap, la recherche est réduite à $$O(\log V)$$, améliorant la complexité à $$O(V \cdot \log V + E)$$, où $$E$$ est le nombre d'arêtes. Cette amélioration est bénéfique pour les graphes grands et clairsemés. Pour les graphes denses, l'implémentation avec Fibonacci-Heap est plus efficace.
+L'algorithme de Dijkstra sans Min-Heap a une complexité temporelle de $O(V^2)$ car chaque sommet doit être recherché, prenant $O(V)$ temps. En utilisant une structure de données Min-Heap ou Fibonacci-Heap, la recherche est réduite à $O(\log V)$, améliorant la complexité à $O(V \cdot \log V + E)$, où $E$ est le nombre d'arêtes. Cette amélioration est bénéfique pour les graphes grands et clairsemés. Pour les graphes denses, l'implémentation avec Fibonacci-Heap est plus efficace.
 
-
-## Version récursive de l'algorithme et hypothèse d'induction
+# Version récursive et hypothèse d'induction
 
 > 7. Proposez une version récursive de l'algorithme (ou d'une partie de celui-ci, si cela est pertinent). Formulez une hypothèse d’induction qui servira à démontrer la correction de l'algorithme sur la base des appels récursifs. Seule l’hypothèse d’induction, et son impact sur la correction de l’implémentation récursive, doit être formulée formellement ; les autres calculs peuvent être considérés corrects.
 
@@ -604,7 +663,7 @@ Une partie clé pour intégrer la récursivité dans l'algorithme de Dijkstra es
 + Une récursion pour sélectionner le sommet minimal.
 + Une récursion pour parcourir les voisins et mettre à jour leurs distances.
 
-### 1. Sélection récursive du sommet minimal
+## 1. Sélection récursive du sommet minimal
 La sélection du sommet minimal parmi les sommets non traités peut remplacer une boucle par une récursion. Voici la fonction récursive théorique :
 ```c
 int recursiveMinDistance(int dist[], Boolean sptSet[], int V, int i, int minIndex, int minVal) {
@@ -616,10 +675,10 @@ int recursiveMinDistance(int dist[], Boolean sptSet[], int V, int i, int minInde
     return recursiveMinDistance(dist, sptSet, V, i + 1, minIndex, minVal); // Passage au sommet suivant.
 }
 ```
-#### Hypothèse d'induction
+### Hypothèse d'induction
 Pour tout $i \in [0, V-1]$, la fonction récursive garantit que le sommet ayant la distance minimale parmi les $i+1$ premiers sommets non traités est retourné.
 
-#### Démonstration mathématique
+### Démonstration mathématique
 1. Cas de base : Si $i = 0$, la fonction vérifie uniquement le sommet initial. Elle retourne son indice si les conditions $\text{dist}[i] < \text{minVal}$ et $\text{sptSet}[i] = \text{false}$ sont remplies. Sinon, elle passe au sommet suivant.
 
 2. Pas inductif : Supposons que la fonction retourne correctement $\text{minIndex}$ pour $i$. À $i+1$ :
@@ -627,11 +686,11 @@ Pour tout $i \in [0, V-1]$, la fonction récursive garantit que le sommet ayant 
     + Si $\text{dist}[i+1] < \text{minVal}$, alors $\text{minIndex}$ est mis à jour avec $i+1$.
     + Sinon, $\text{minIndex}$ reste inchangé. La condition est préservée pour $i+1$.
 
-#### Complexité
+### Complexité
 + Temporelle : $O(V)$.
 + Spatiale : $O(V)$ en raison de la pile d'appels récursifs.
 
-### 2. Mise à jour récursive des distances des voisins
+## 2. Mise à jour récursive des distances des voisins
 Après avoir sélectionné un sommet $u$, la mise à jour des distances de ses voisins peut également être effectuée récursivement.
 ```c
 void recursiveUpdate(NodeList* tmp, int u, int dist[], int pred[], Boolean sptSet[]) {
@@ -647,12 +706,12 @@ void recursiveUpdate(NodeList* tmp, int u, int dist[], int pred[], Boolean sptSe
     recursiveUpdate(tmp->next, u, dist, pred, sptSet); // Appel récursif pour le voisin suivant.
 }
 ```
-#### Hypothèse d'induction
+### Hypothèse d'induction
 Pour tout $v \in \Gamma^+(u)$, où $\Gamma^+(u)$ est l'ensemble des voisins de $u$ :
 
 $$\phi[v] = \min(\phi[v], \phi[u] + w(u,v))$$
 
-#### Démonstration mathématique
+### Démonstration mathématique
 1. Cas de base : Si $\Gamma^+(u) = \emptyset$, la fonction retourne immédiatement, ce qui est correct.
 
 2. Pas inductif : Supposons que la mise à jour est correcte pour les $k$ premiers voisins. Pour le $(k+1)$-ème voisin $v$ :
@@ -660,11 +719,11 @@ $$\phi[v] = \min(\phi[v], \phi[u] + w(u,v))$$
 Si $\phi[u] + w(u, v) < \phi[v]$, alors $\phi[v]$ est mis à jour correctement.
 Sinon, $\phi[v]$ reste inchangé.
 
-#### Complexité
+### Complexité
 + Temporelle : $O(d(u))$, où $d(u)$ est le degré de $u$.
 + Spatiale : $O(d(u))$ appels récursifs au maximum.
 
-### Intégration théorique dans Dijkstra
+## Intégration théorique dans Dijkstra
 Ces deux fonctions récursives peuvent être appelées dans l'algorithme principal de Dijkstra comme suit :
 ```c
 while (count < V - 1) {
@@ -677,7 +736,7 @@ while (count < V - 1) {
 }
 ```
 
-### Comparaison récursivité vs boucle
+## Comparaison récursivité vs boucle
 
 |                | Non récursif | Récursif |
 |----------------|--------------|----------|
@@ -686,13 +745,9 @@ while (count < V - 1) {
 | Spatiale       | $O(1)$       | $O(V)$ (pile d'appels) |
 | Flexibilité    | Limitée      | Plus modulaire |
 
-### Recommandation
 Bien que l'approche récursive apporte une modularité et une clarté théorique, elle n'est pas optimale en termes de performances pratiques (risques liés à la pile). Une implémentation non récursive est donc préférable pour des graphes de grande taille.
 
-### Conclusion
-Ces approches récursives permettent d'explorer les fondements mathématiques et la structure de Dijkstra, mais elles restent une adaptation académique. En pratique, elles sont utiles pour enseigner les concepts ou pour des cas très spécifiques où la récursivité apporte un avantage en termes de modularité ou de clarté algorithmique.
-
-## Informations pertinentes et caractéristiques de l'algorithme choisi
+# Informations pertinentes supplémentaires
 
 > 8. Enfin, en fonction de l’algorithme que vous aurez choisi, ajoutez des informations qui vous semblent pertinentes ou sur des aspects caractéristiques à cet algorithme qui sont précisés dans la description de l’algorithme.
 
@@ -707,8 +762,8 @@ L’objectif est de minimiser le coût total d’un transfert fiscal entre une s
 $$
 \phi[v] = 
 \begin{cases} 
-0, & \text{si } v = src, \\
-\min \{ \phi[u] + w(u, v) \mid (u, v) \in E \}, & \text{si } v \neq src, \\
+0, & \text{si } v = src, \newline
+\min \{ \phi[u] + w(u, v) \mid (u, v) \in E \}, & \text{si } v \neq src, \newline
 +\infty, & \text{si aucun chemin n’existe.}
 \end{cases}
 $$
@@ -756,10 +811,9 @@ Le chemin direct ($A \rightarrow C$) reste optimal.
 
 Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra modélise efficacement les stratégies fiscales en minimisant le coût total de circulation. L’approche repose sur des calculs explicites pour trouver le chemin optimal dans un réseau fiscal pondéré.
 
+# **Sources**
 
-## **Sources**
-
-### **1. Cours et documents académiques**
+## **1. Cours et documents académiques**
 - **Techniques de programmation**  
   Support du cours pour étudiants en horaire décalé.  
   Assistante : M. Barkallah, Assistant : G. Yernaux.  
@@ -784,7 +838,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
   https://dial.uclouvain.be/memoire/ucl/object/thesis:2776
 ---
 
-### **2. Livres de référence**
+## **2. Livres de référence**
 - Rivest, R., Stein, C., Cormen, T., & Leiserson, C. (2010). *Algorithmique, 3ème édition*. Dunod.  
   Une référence incontournable couvrant les graphes, les structures de données et Dijkstra.  
 
@@ -793,7 +847,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
 
 ---
 
-### **3. Tutoriels en ligne et implémentations**
+## **3. Tutoriels en ligne et implémentations**
 - **GeeksforGeeks**  
   - [Binary Heap](https://www.geeksforgeeks.org/binary-heap/).  
   - [Heap Data Structure](https://www.geeksforgeeks.org/heap-data-structure/).  
@@ -805,7 +859,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
 
 ---
 
-### **4. Cours en ligne et vidéos pédagogiques**
+## **4. Cours en ligne et vidéos pédagogiques**
 - Champagne, J. (2023). *Langage C #22 - Graphes*. [YouTube](https://www.youtube.com/watch?v=T5MU8NDMMj4).  
 - Champagne, J. (2024). *Architecture - Graphe*. [YouTube](https://www.youtube.com/watch?v=TwO8rCTFy1c).  
 - Série sur l'algorithme de Dijkstra :  
@@ -814,7 +868,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
 
 ---
 
-### **5. Articles et ressources académiques**
+## **5. Articles et ressources académiques**
 - Parreaux, J. *Analyse de l'algorithme de Dijkstra*. [ENS Rennes](https://perso.eleves.ens-rennes.fr/people/Julie.Parreaux/fichiers_agreg/info_dev/Dijkstra.pdf).  
 - **Cours complémentaires :**  
   - ENS Rennes : [Complexité - Cours 4](https://lacl.u-pec.fr/dima/complexite/cours4.pdf).  
@@ -822,7 +876,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
 
 ---
 
-### **6. Ressources généralistes**
+## **6. Ressources généralistes**
 - Wikipédia :  
   - [Algorithme de Dijkstra](https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra).  
   - [Liste d'adjacence](https://fr.wikipedia.org/wiki/Liste_d%27adjacence).  
@@ -830,7 +884,7 @@ Ainsi, on peut conclure que cet exemple montre que l’algorithme de Dijkstra mo
 
 ---
 
-### **7. Bibliothèques et outils**
+## **7. Bibliothèques et outils**
 - [Graphviz Documentation](https://graphviz.org/docs/library/).  
   Documentation officielle pour visualiser les graphes.  
 

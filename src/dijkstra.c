@@ -70,17 +70,17 @@ void dijkstra_simple(Graph *graph, int src) {
     // Trouver le chemin le plus court pour tous les sommets
     for (int count = 0; count < V - 1; count++) {
         // Choisir le sommet de distance minimale parmi ceux qui ne sont pas encore traités
-        int u = findMinDistanceIndex(dist, sptSet, V);
-        int u = recursiveMinDistance(dist, sptSet, V, 0, -1, INT_MAX);
+        // int u = findMinDistanceIndex(dist, sptSet, V);
+        // int u = recursiveMinDistance(dist, sptSet, V, 0, -1, INT_MAX);
 
-        // int u = -1;                 // Erreur si sommet non trouvé
-        // int min_dist = INT_MAX;     // Initialiser à la valeur maximale
-        // for (int v = 0; v < V; v++) {
-        //     if (!sptSet[v] && dist[v] <= min_dist) {
-        //         min_dist = dist[v]; // màj min_dist
-        //         u = v;              // màj le sommet avec la distance minimale
-        //     }
-        // }
+        int u = -1;                 // Erreur si sommet non trouvé
+        int min_dist = INT_MAX;     // Initialiser à la valeur maximale
+        for (int v = 0; v < V; v++) {
+            if (!sptSet[v] && dist[v] <= min_dist) {
+                min_dist = dist[v]; // màj min_dist
+                u = v;              // màj le sommet avec la distance minimale
+            }
+        }
 
         if(u == -1) break; // Si aucun sommet n'a été trouvé, sortir de la boucle
         sptSet[u] = true;  // Marquer le sommet choisi comme traité
